@@ -29,7 +29,7 @@ AdHunt3r es una extensión de Chrome que **detecta y analiza anuncios y videos d
 
 1. Descarga el código:
    ```bash
-   git clone https://github.com/your-repo/AdHunt3r.git
+   git clone https://github.com/AdHunt3rs/adhunt3r_tool.git
    ```
 2. Abre Chrome y ve a `chrome://extensions/`
 3. Activa "Modo desarrollador"
