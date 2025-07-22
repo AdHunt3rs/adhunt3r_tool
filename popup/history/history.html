@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Historial de consultas - YouTube AdHunt3r</title>
+  <link rel="stylesheet" href="history.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+  <div class="app-container">
+    <!-- Header con logo y título -->
+    <header class="app-header">
+      <!-- Contenedor para alertas de almacenamiento -->
+      <div id="storageAlert" style="display: none;"></div>
+      
+      <div class="header-content">
+        <div class="logo-section">
+          <i class="fas fa-bullseye logo-icon"></i>
+          <h1>AdHunt3r</h1>
+        </div>
+        <div class="header-stats">
+          <span class="stat-item">
+            <i class="fas fa-video"></i>
+            <span id="totalVideos">0</span> videos
+          </span>
+          <span class="stat-item">
+            <i class="fas fa-ad"></i>
+            <span id="totalAds">0</span> anuncios
+          </span>
+          <span class="stat-item">
+            <i class="fas fa-star"></i>
+            <span id="totalFavorites">0</span> favoritos
+          </span>
+          <div class="history-config">
+            <button id="historyConfigBtn" class="config-btn" title="Configuración del historial">
+              <i class="fas fa-cog"></i>
+            </button>
+            <div id="historyConfigMenu" class="config-menu" style="display: none;">
+              <div class="config-menu-header">
+                <h4>Configuración del Historial</h4>
+              </div>
+              
+              <!-- Indicador de datos guardados -->
+              <div class="config-storage-info">
+                <div class="storage-info-header">
+                  <i class="fas fa-database"></i>
+                  <span>Datos Guardados</span>
+                </div>
+                <div class="storage-info-content">
+                  <div class="storage-stats">
+                    <div class="storage-stat-item">
+                      <span class="stat-label">Videos:</span>
+                      <span class="stat-value" id="configVideoCount">0</span>
+                    </div>
+                    <div class="storage-stat-item">
+                      <span class="stat-label">Anuncios:</span>
+                      <span class="stat-value" id="configAdCount">0</span>
+                    </div>
+                    <div class="storage-stat-item">
+                      <span class="stat-label">Favoritos:</span>
+                      <span class="stat-value" id="configFavoriteCount">0</span>
+                    </div>
+                    <div class="storage-stat-item total">
+                      <span class="stat-label">Total:</span>
+                      <span class="stat-value" id="configTotalCount">0</span>
+                    </div>
+                  </div>
+                  <div class="storage-size-info">
+                    <span class="size-label">Tamaño:</span>
+                    <span class="size-value" id="configStorageSize">0 KB</span>
+                  </div>
+                </div>
+              </div>
+
+              
+
+              
+              <div class="config-note">
+                <i class="fas fa-star"></i>
+                <span>Happy Adhunt1ng</span>
+              </div>
+            </div>
+          </div>
+          
+          <!-- Indicador de almacenamiento -->
+          <div class="storage-indicator">
+            <div class="storage-info">
+              <i class="fas fa-database storage-icon"></i>
+              <span class="storage-text">
+                <span id="storagePercentage">0%</span>
+                <span class="storage-label">usado</span>
+                <span class="storage-size" id="storageSize">0 KB</span>
+              </span>
+            </div>
+            <div class="storage-bar">
+              <div class="storage-fill" id="storageFill"></div>
+            </div>
+          </div>
+          
+          <!-- Indicador de datos por tipo -->
+          <div class="data-type-indicator">
+            <div class="data-type-info">
+              <i class="fas fa-chart-pie data-type-icon"></i>
+              <span class="data-type-text">
+                <span class="data-type-item">
+                  <i class="fas fa-video"></i>
+                  <span id="videoDataSize">0 KB</span>
+                </span>
+                <span class="data-type-item">
+                  <i class="fas fa-ad"></i>
+                  <span id="adDataSize">0 KB</span>
+                </span>
+              </span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <!-- Primera barra: Filtros -->
+    <div class="filter-bar">
+      <div class="filter-group">
+        <div class="filter-item">
+          <i class="fas fa-filter filter-icon"></i>
+          <select id="filterType" class="filter-select">
+            <option value="all">Todos los tipos</option>
+            <option value="ad">Anuncios</option>
+            <option value="video">Videos</option>
+            <option value="favorite">Favoritos</option>
+          </select>
+        </div>
+        
+        <div class="filter-item">
+          <i class="fas fa-calendar filter-icon"></i>
+          <select id="filterDate" class="filter-select">
+            <option value="all">Todas las fechas</option>
+            <option value="24h">Últimas 24h</option>
+            <option value="7d">Últimos 7 días</option>
+            <option value="30d">Último mes</option>
+          </select>
+        </div>
+        
+        <div class="filter-item duration-filter">
+          <i class="fas fa-play filter-icon"></i>
+          <div class="duration-inputs">
+            <input type="number" id="filterDurationMin" placeholder="Min" class="duration-input">
+            <span class="duration-separator">-</span>
+            <input type="number" id="filterDurationMax" placeholder="Max" class="duration-input">
+            <span class="duration-unit">mins</span>
+          </div>
+        </div>
+        
+        <div class="filter-item search-filter">
+          <i class="fas fa-search filter-icon"></i>
+          <input type="text" id="filterKeyword" placeholder="Buscar..." class="search-input">
+        </div>
+      </div>
+      
+      <div class="filter-actions">
+        <button id="applyFiltersBtn" class="btn-primary">
+          <i class="fas fa-check"></i>
+          Aplicar
+        </button>
+        <button id="clearFiltersBtn" class="btn-secondary">
+          <i class="fas fa-times"></i>
+          Limpiar
+        </button>
+      </div>
+    </div>
+
+    <!-- Segunda barra: Acciones y tema -->
+    <div class="action-bar">
+      <div class="action-group">
+        <!-- Selección múltiple -->
+        <div class="selection-controls">
+          <label class="checkbox-container">
+            <input type="checkbox" id="selectAllItems">
+            <span class="checkmark"></span>
+            <span class="checkbox-label">Seleccionar todo</span>
+          </label>
+          <span class="selection-count" id="selectionCount">0 seleccionados</span>
+        </div>
+        
+        <!-- Acciones por lotes -->
+        <div class="batch-actions" id="batchActions" style="display: none;">
+          <button id="batchDeleteBtn" class="btn-danger" disabled>
+            <i class="fas fa-trash"></i>
+            Eliminar
+          </button>
+          <button id="batchSaveBtn" class="btn-success" disabled>
+            <i class="fas fa-star"></i>
+            Guardar
+          </button>
+        </div>
+      </div>
+      
+      <div class="action-group">
+        <!-- Exportación -->
+        <div class="export-actions">
+          <button id="exportJsonBtn" class="btn-export" disabled>
+            <i class="fas fa-file-code"></i>
+            Exportar JSON
+          </button>
+          <button id="exportHtmlBtn" class="btn-export" disabled>
+            <i class="fas fa-file-code"></i>
+            Exportar HTML
+          </button>
+          <button id="importJsonBtn" class="btn-export" title="Importar archivos JSON de consultas (máx. 25KB por archivo)">
+            <i class="fas fa-file-import"></i>
+            Importar JSON
+          </button>
+          <input type="file" id="importJsonInput" accept="application/json" multiple style="display:none;" />
+        </div>
+        <!-- Toggle de modo de visualización -->
+        <div class="view-mode-toggle">
+          <button id="viewModeToggle" class="btn-secondary" title="Cambiar vista">
+            <i class="fas fa-columns"></i>
+            <span id="viewModeText">Split</span>
+          </button>
+        </div>
+        <!-- Toggle de tema -->
+        <div class="theme-toggle">
+          <label class="toggle-switch">
+            <input type="checkbox" id="themeToggle">
+            <span class="toggle-slider">
+              <i class="fas fa-sun light-icon"></i>
+              <i class="fas fa-moon dark-icon"></i>
+            </span>
+          </label>
+        </div>
+      </div>
+    </div>
+
+    <!-- Contenido principal -->
+    <main class="main-content">
+      <!-- Estado de carga -->
+      <div id="loadingState" class="loading-state" style="display: none;">
+        <div class="loading-spinner"></div>
+        <p>Cargando historial...</p>
+      </div>
+
+      <!-- Estado vacío -->
+      <div id="emptyState" class="empty-state" style="display: none;">
+        <i class="fas fa-inbox empty-icon"></i>
+        <h3>No hay elementos que mostrar</h3>
+        <p>Ajusta los filtros o espera a que se recopilen más datos</p>
+      </div>
+
+      <!-- Contenedor de tarjetas -->
+      <div id="cardsContainer" class="cards-container">
+        <!-- Las tarjetas se generarán dinámicamente -->
+      </div>
+
+      <!-- Panel de detalles -->
+      <div id="detailPane" class="detail-pane" style="display: none;">
+        <!-- Estado vacío del panel de detalles -->
+        <div id="detailEmptyState" class="empty-state">
+          <i class="fas fa-info-circle empty-icon"></i>
+          <h3>Selecciona un elemento</h3>
+          <p>Haz clic en una tarjeta para ver sus detalles</p>
+        </div>
+        
+        <!-- Contenido de detalles -->
+        <div id="detailContent" class="detail-content" style="display: none;">
+          <!-- Los detalles se generarán dinámicamente -->
+        </div>
+      </div>
+    </main>
+
+    <!-- Overlay de progreso -->
+    <div id="batchProgressOverlay" class="progress-overlay" style="display: none;">
+      <div class="progress-content">
+        <div class="progress-spinner"></div>
+        <p id="batchProgressMsg">Procesando...</p>
+        <div class="progress-bar">
+          <div class="progress-fill" id="progressFill"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script type="module" src="history.js"></script>
+</body>
+</html>

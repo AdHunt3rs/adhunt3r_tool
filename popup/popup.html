@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>AdHunt3r YT Debug Info</title>
+  <link rel="stylesheet" href="popup.css">
+
+</head>
+<body>
+  <h3>AdHunt3r YT Debug Info</h3>
+  
+  <!-- Contenedor para alertas de almacenamiento -->
+  <div id="storageAlert" style="display: none;"></div>
+  
+  <div id="ad_state"></div>
+  <div id="counters-row">
+    <span id="ad_count_24h" class="counter-box ad-count" role="status" aria-label="Contador de anuncios en 24 horas"><span class="counter-label">Ads en 24h</span><br><span class="counter-value">0</span></span>
+    <button id="resetCountersBtn" class="reset-btn" title="Resetear contadores de 24h (no afecta historial)" aria-label="Resetear contadores de 24 horas">Reset</button>
+    <span id="video_count_24h" class="counter-box video-count" role="status" aria-label="Contador de videos vistos en 24 horas"><span class="counter-label">Videos en 24h</span><br><span class="counter-value">0</span></span>
+  </div>
+  <div>
+    <b>Info de depuración:</b>
+    <button id="copyAllBtn" class="small-btn"  aria-label="Copiar información de depuración al portapapeles">Copiar Debug Info</button>
+    <pre id="debugInfo" role="log" aria-label="Información de depuración">Visita un video para cargar la info</pre>
+  </div>
+  
+  <button id="openHistoryBtn" class="copy-btn history-button" aria-label="Abrir historial de consultas API">Historial Consultas API</button>
+  
+  <div id="addebug_section">
+    <b>addebug_videoId:</b> <span id="addebug_videoId" role="status" aria-label="ID de debug del anuncio">(no disponible)</span>
+  </div>
+
+  <div id="ytad_section">
+    <b>Datos del anuncio (API):</b>
+
+    <div class="ytad-btn-row">
+      <button id="ytAdQueryBtn" aria-label="Consultar datos del anuncio actual via YouTube API">Consultar datos del anuncio</button>
+      <button id="copyYtAdDataBtn" aria-label="Copiar datos del anuncio al portapapeles">Copiar datos del anuncio</button>
+    </div>
+    <pre id="ytad_pre" role="log" aria-label="Datos del anuncio obtenidos de YouTube API"></pre>
+  </div>
+
+  <div id="ytdata_section">
+    <b>Datos del video (API):</b>
+    
+    <div class="ytdata-btn-row">
+      <button id="ytQueryBtn" aria-label="Consultar datos del video actual via YouTube API">Consultar datos del video</button>
+      <button id="copyYtDataBtn" aria-label="Copiar datos del video al portapapeles">Copiar datos del video</button>
+    </div>
+    <pre id="ytdata_pre" role="log" aria-label="Datos del video obtenidos de YouTube API"></pre>
+  </div>
+
+  <div class="submenu">
+    <label for="apiKeyInput">Usar mi API:</label>
+    <input type="password" id="apiKeyInput" placeholder="Pega tu clave de API" aria-describedby="apiKeyStatus">
+    <button id="toggleApiKeyBtn" title="Mostrar/Ocultar" aria-label="Mostrar/Ocultar contraseña">👁️‍🗨️</button>
+    <button id="saveApiKeyBtn" aria-label="Guardar clave API">Guardar</button>
+    <span id="apiKeyStatus" role="status" aria-live="polite"></span>
+  </div>
+
+  <div class="option-group" style="margin-top: 1rem;">
+    <label class="toggle-switch">
+      <input type="checkbox" id="iframeExtractionToggle">
+      <span class="toggle-slider"></span>
+    </label>
+    <span style="margin-left: 8px;">Extraer datos del centro de anuncios</span>
+  </div>
+  <div class="option-group" style="margin-top: 0.5rem;">
+    <label class="toggle-switch">
+      <input type="checkbox" id="colorModeToggle">
+      <span class="toggle-slider"></span>
+    </label>
+    <span style="margin-left: 8px;">Modo oscuro</span>
+  </div>
+  
+  <!-- Contenedor para notificaciones toast -->
+  <div id="toastContainer"></div>
+  
+  <script src="popup.js" type="module" crossorigin="anonymous"></script>
+</body>
+</html>

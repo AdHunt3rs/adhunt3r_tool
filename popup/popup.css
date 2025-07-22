@@ -1,0 +1,1312 @@
+/* ==================== */
+/* VARIABLES Y GENERALES */
+/* ==================== */
+:root {
+  --primary-color: #68bd18;
+  --danger-color: #e53935;
+  --success-color: #2c97c9;
+  --warning-color: #ff9800;
+  --alternative-color1: #8cb300;
+  --text-color: #222;
+  --light-text: #666;
+  --bg-color: #fafbfc;
+  --card-bg: #fff;
+  --border-color: #e0e0e0;
+  --border-radius: 6px;
+  --box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+  --transition: all 0.25s ease;
+}
+
+/* ==================== */
+/* ESTILOS EXISTENTES MEJORADOS */
+/* ==================== */
+
+/* Estado desactivado para el botón de anuncio */
+.disabled-ad-btn {
+  background: #eee !important;
+  color: #888 !important;
+  border: 1.5px dashed #bbb !important;
+  cursor: not-allowed !important;
+  opacity: 1 !important;
+}
+
+/* Base styles */
+body {
+  font-family: 'Segoe UI', Roboto, Oxygen-Sans, Ubuntu, Cantarell, 
+               'Helvetica Neue', Arial, sans-serif;
+  width: 400px;
+  background: var(--bg-color);
+  color: var(--text-color);
+  margin: 0;
+  padding: 12px;
+  box-sizing: border-box;
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+}
+
+body.darkmode {
+  --bg-color: #181a1b;
+  --card-bg: #23272a;
+  --text-color: #e0e0e0;
+  --light-text: #aaa;
+  --border-color: #333;
+  --box-shadow: 0 1px 4px #111a;
+  background: var(--bg-color);
+  color: var(--text-color);
+}
+
+/* Header and title */
+h3 {
+  text-align: center;
+  font-size: 1.1rem;
+  margin: 0.5em 0;
+  font-weight: 600;
+  position: relative;
+  padding-bottom: 8px;
+}
+
+h3::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 25%;
+  width: 50%;
+  height: 2px;
+  background: var(--primary-color);
+}
+
+/* Ad state and counters */
+#ad_state {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-bottom: 0.5rem;
+  text-align: center;
+}
+
+.ad-state-box {
+  display: inline-block;
+  min-width: 120px;
+  text-align: center;
+  font-weight: 600;
+  padding: 0.75rem 1rem;
+  border-radius: var(--border-radius);
+  border: 2px solid var(--text-color);
+  background: var(--card-bg);
+  box-shadow: var(--box-shadow);
+  user-select: none;
+  transition: var(--transition);
+}
+
+.ad-state-box.ad {
+  border-color: var(--danger-color);
+  color: var(--danger-color);
+  animation: pulse 1.5s infinite;
+}
+
+.gotoadbtn {
+  margin-left:10px;
+  color: var(--danger-color) !important;
+}
+
+@keyframes pulse {
+  0% { opacity: 1; }
+  50% { opacity: 0.8; }
+  100% { opacity: 1; }
+}
+
+/* Counters */
+#counters-row {
+  display: flex;
+  gap: 14px;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 0.8rem;
+}
+
+.counter-box {
+  display: inline-block;
+  min-width: 90px;
+  text-align: center;
+  font-weight: 500;
+  padding: 0.5rem;
+  border-radius: var(--border-radius);
+  border: 1px solid var(--border-color);
+  background: var(--card-bg);
+  box-shadow: var(--box-shadow);
+  user-select: none;
+  transition: var(--transition);
+}
+
+.counter-box:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 3px 6px rgba(0,0,0,0.1);
+}
+
+.counter-box.ad-count {
+  color: var(--primary-color);
+  border-color: var(--text-color);
+}
+
+.counter-box.video-count {
+  color: var(--success-color);
+  border-color: var(--text-color);
+}
+
+.counter-label {
+  font-size: 0.75rem;
+  font-weight: 500;
+  color: var(--light-text);
+}
+
+.counter-value {
+  display: block;
+  font-size: 1.3rem;
+  font-weight: 700;
+  margin-top: 4px;
+}
+
+/* Debug info section */
+#debugInfo {
+  background: #f8f9fa;
+  padding: 0.75rem;
+  border-radius: var(--border-radius);
+  max-height: 80px;
+  overflow: auto;
+  font-family: 'Fira Code', 'Consolas', monospace;
+  font-size: 0.65rem;
+  line-height: 1.5;
+  margin: 0.5rem 0;
+  white-space: pre-wrap;
+  word-break: break-word;
+  border: 1px solid var(--border-color);
+  overflow-x: auto;
+  max-width: 100%;
+  box-sizing: border-box;
+}
+
+/* History button */
+.history-button {
+  display: block;
+  margin: 0.5rem auto 0.5rem;
+  width: fit-content;
+}
+
+/* API Key section */
+.submenu {
+  margin-top: 0.5rem;
+  border-top: 1px solid var(--border-color);
+  padding-top: 0.75rem;
+}
+
+.submenu label {
+  font-weight: 600;
+  display: block;
+  margin-bottom: 0.5rem;
+}
+
+.submenu input {
+  width: 180px;
+  padding: 0.5rem 0.75rem;
+  border: 1px solid var(--border-color);
+  border-radius: var(--border-radius);
+  font-size: 0.9rem;
+  transition: var(--transition);
+}
+
+.submenu input:focus {
+  border-color: var(--primary-color);
+  outline: none;
+  box-shadow: 0 0 0 2px rgba(25, 118, 210, 0.2);
+}
+
+/* Estilos para inputs en modo oscuro */
+body.darkmode .submenu input {
+  background: #2a2a2a;
+  color: #e0e0e0;
+  border-color: #444;
+}
+
+body.darkmode .submenu input:focus {
+  border-color: var(--primary-color);
+  box-shadow: 0 0 0 2px rgba(94, 203, 44, 0.2);
+}
+
+.submenu button {
+  margin-left: 0.5rem;
+}
+
+#apiKeyStatus {
+  color: var(--success-color);
+  margin-left: 0.5rem;
+  font-size: 0.9rem;
+}
+
+/* YouTube data sections */
+#ytdata_section, #ytad_section {
+  margin-top: 0.5rem;
+  background: var(--card-bg);
+  border-radius: var(--border-radius);
+  padding: 1rem;
+  box-sizing: border-box;
+  box-shadow: var(--box-shadow);
+}
+
+/* Estilos para secciones de datos en modo oscuro */
+body.darkmode #ytdata_section,
+body.darkmode #ytad_section {
+  background: #2a2a2a;
+  border: 1px solid #444;
+}
+
+#ytad_section {
+  margin-top: 0.5rem;
+}
+
+.ytdata-btn-row, .ytad-btn-row {
+  margin-top: 0.5rem;
+  margin-bottom: 0.5rem;
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+#ytdata_pre, #ytad_pre {
+  background: #f8f9fa !important;
+  color: #333 !important;
+  padding: 0.75rem !important;
+  border-radius: var(--border-radius) !important;
+  max-height: 150px !important;
+  min-height: 120px !important;
+  overflow: auto !important;
+  font-family: 'Fira Code', 'Consolas', monospace !important;
+  font-size: 0.7rem !important;
+  line-height: 1.5 !important;
+  margin: 0.5rem 0 !important;
+  box-sizing: border-box !important;
+  white-space: pre-wrap !important;
+  word-break: break-word !important;
+  border: 1px solid var(--border-color) !important;
+}
+
+/* Estilos para modo oscuro - cajas de datos */
+body.darkmode #ytdata_pre, 
+body.darkmode #ytad_pre {
+  background: #2a2a2a !important;
+  color: #e0e0e0 !important;
+  border-color: #444 !important;
+}
+
+/* Estilos para modo oscuro - debug info */
+body.darkmode #debugInfo {
+  background: #2a2a2a !important;
+  color: #e0e0e0 !important;
+  border-color: #444 !important;
+}
+
+/* Estilos para barras de scroll en modo oscuro */
+body.darkmode #ytdata_pre::-webkit-scrollbar,
+body.darkmode #ytad_pre::-webkit-scrollbar,
+body.darkmode #debugInfo::-webkit-scrollbar {
+  width: 8px;
+}
+
+body.darkmode #ytdata_pre::-webkit-scrollbar-track,
+body.darkmode #ytad_pre::-webkit-scrollbar-track,
+body.darkmode #debugInfo::-webkit-scrollbar-track {
+  background: #1a1a1a;
+  border-radius: 4px;
+}
+
+body.darkmode #ytdata_pre::-webkit-scrollbar-thumb,
+body.darkmode #ytad_pre::-webkit-scrollbar-thumb,
+body.darkmode #debugInfo::-webkit-scrollbar-thumb {
+  background: #555;
+  border-radius: 4px;
+  border: 1px solid #1a1a1a;
+}
+
+body.darkmode #ytdata_pre::-webkit-scrollbar-thumb:hover,
+body.darkmode #ytad_pre::-webkit-scrollbar-thumb:hover,
+body.darkmode #debugInfo::-webkit-scrollbar-thumb:hover {
+  background: #777;
+}
+
+/* Firefox scrollbar para modo oscuro */
+body.darkmode #ytdata_pre,
+body.darkmode #ytad_pre,
+body.darkmode #debugInfo {
+  scrollbar-width: thin;
+  scrollbar-color: #555 #1a1a1a;
+}
+
+/* Estilos para la barra de scroll principal del popup */
+body::-webkit-scrollbar,
+html::-webkit-scrollbar {
+  width: 8px !important;
+}
+
+body::-webkit-scrollbar-track,
+html::-webkit-scrollbar-track {
+  background: #f5f5f5 !important;
+  border-radius: 4px !important;
+}
+
+body::-webkit-scrollbar-thumb,
+html::-webkit-scrollbar-thumb {
+  background: #c1c1c1 !important;
+  border-radius: 4px !important;
+  border: 1px solid #f5f5f5 !important;
+}
+
+body::-webkit-scrollbar-thumb:hover,
+html::-webkit-scrollbar-thumb:hover {
+  background: #a8a8a8 !important;
+}
+
+/* Firefox scrollbar para el popup */
+body,
+html {
+  scrollbar-width: thin !important;
+  scrollbar-color: #c1c1c1 #f5f5f5 !important;
+}
+
+/* Estilos para la barra de scroll del popup en modo oscuro */
+body.darkmode::-webkit-scrollbar,
+html.darkmode::-webkit-scrollbar,
+body.darkmode html::-webkit-scrollbar {
+  width: 8px !important;
+}
+
+body.darkmode::-webkit-scrollbar-track,
+html.darkmode::-webkit-scrollbar-track,
+body.darkmode html::-webkit-scrollbar-track {
+  background: #1a1a1a !important;
+  border-radius: 4px !important;
+}
+
+body.darkmode::-webkit-scrollbar-thumb,
+html.darkmode::-webkit-scrollbar-thumb,
+body.darkmode html::-webkit-scrollbar-thumb {
+  background: #555 !important;
+  border-radius: 4px !important;
+  border: 1px solid #1a1a1a !important;
+}
+
+body.darkmode::-webkit-scrollbar-thumb:hover,
+html.darkmode::-webkit-scrollbar-thumb:hover,
+body.darkmode html::-webkit-scrollbar-thumb:hover {
+  background: #777 !important;
+}
+
+/* Firefox scrollbar para el popup en modo oscuro */
+body.darkmode,
+html.darkmode,
+body.darkmode html {
+  scrollbar-width: thin !important;
+  scrollbar-color: #555 #1a1a1a !important;
+}
+
+/* NUEVO: Reglas de máxima especificidad para el popup principal en modo oscuro */
+body.darkmode::-webkit-scrollbar,
+html.darkmode::-webkit-scrollbar,
+body.darkmode html::-webkit-scrollbar,
+html.darkmode body::-webkit-scrollbar {
+  width: 8px !important;
+}
+
+body.darkmode::-webkit-scrollbar-track,
+html.darkmode::-webkit-scrollbar-track,
+body.darkmode html::-webkit-scrollbar-track,
+html.darkmode body::-webkit-scrollbar-track {
+  background: #1a1a1a !important;
+  border-radius: 4px !important;
+}
+
+body.darkmode::-webkit-scrollbar-thumb,
+html.darkmode::-webkit-scrollbar-thumb,
+body.darkmode html::-webkit-scrollbar-thumb,
+html.darkmode body::-webkit-scrollbar-thumb {
+  background: #555 !important;
+  border-radius: 4px !important;
+  border: 1px solid #1a1a1a !important;
+}
+
+body.darkmode::-webkit-scrollbar-thumb:hover,
+html.darkmode::-webkit-scrollbar-thumb:hover,
+body.darkmode html::-webkit-scrollbar-thumb:hover,
+html.darkmode body::-webkit-scrollbar-thumb:hover {
+  background: #777 !important;
+}
+
+/* Firefox scrollbar con máxima especificidad para modo oscuro */
+body.darkmode,
+html.darkmode,
+body.darkmode html,
+html.darkmode body {
+  scrollbar-width: thin !important;
+  scrollbar-color: #555 #1a1a1a !important;
+}
+
+/* Estilos adicionales para asegurar que se apliquen en el popup */
+*::-webkit-scrollbar {
+  width: 8px !important;
+}
+
+*::-webkit-scrollbar-track {
+  background: #f5f5f5 !important;
+  border-radius: 4px !important;
+}
+
+*::-webkit-scrollbar-thumb {
+  background: #c1c1c1 !important;
+  border-radius: 4px !important;
+  border: 1px solid #f5f5f5 !important;
+}
+
+*::-webkit-scrollbar-thumb:hover {
+  background: #a8a8a8 !important;
+}
+
+/* Estilos para modo oscuro en cualquier elemento */
+body.darkmode *::-webkit-scrollbar-track {
+  background: #1a1a1a !important;
+}
+
+body.darkmode *::-webkit-scrollbar-thumb {
+  background: #555 !important;
+  border-color: #1a1a1a !important;
+}
+
+body.darkmode *::-webkit-scrollbar-thumb:hover {
+  background: #777 !important;
+}
+
+/* Estilos adicionales para asegurar que se apliquen en modo oscuro */
+html.darkmode::-webkit-scrollbar-track,
+body.darkmode html::-webkit-scrollbar-track {
+  background: #1a1a1a !important;
+}
+
+html.darkmode::-webkit-scrollbar-thumb,
+body.darkmode html::-webkit-scrollbar-thumb {
+  background: #555 !important;
+  border-color: #1a1a1a !important;
+}
+
+html.darkmode::-webkit-scrollbar-thumb:hover,
+body.darkmode html::-webkit-scrollbar-thumb:hover {
+  background: #777 !important;
+}
+
+/* Firefox scrollbar para modo oscuro - asegurar que se aplique */
+html.darkmode,
+body.darkmode html {
+  scrollbar-width: thin !important;
+  scrollbar-color: #555 #1a1a1a !important;
+}
+
+/* Estilos específicos para cuando html tiene la clase darkmode */
+html.darkmode::-webkit-scrollbar {
+  width: 8px !important;
+}
+
+html.darkmode::-webkit-scrollbar-track {
+  background: #1a1a1a !important;
+  border-radius: 4px !important;
+}
+
+html.darkmode::-webkit-scrollbar-thumb {
+  background: #555 !important;
+  border-radius: 4px !important;
+  border: 1px solid #1a1a1a !important;
+}
+
+html.darkmode::-webkit-scrollbar-thumb:hover {
+  background: #777 !important;
+}
+
+/* Estilos de máxima especificidad para modo oscuro */
+html.darkmode::-webkit-scrollbar,
+body.darkmode::-webkit-scrollbar,
+html.darkmode body::-webkit-scrollbar,
+body.darkmode html::-webkit-scrollbar {
+  width: 8px !important;
+}
+
+html.darkmode::-webkit-scrollbar-track,
+body.darkmode::-webkit-scrollbar-track,
+html.darkmode body::-webkit-scrollbar-track,
+body.darkmode html::-webkit-scrollbar-track {
+  background: #1a1a1a !important;
+  border-radius: 4px !important;
+}
+
+html.darkmode::-webkit-scrollbar-thumb,
+body.darkmode::-webkit-scrollbar-thumb,
+html.darkmode body::-webkit-scrollbar-thumb,
+body.darkmode html::-webkit-scrollbar-thumb {
+  background: #555 !important;
+  border-radius: 4px !important;
+  border: 1px solid #1a1a1a !important;
+}
+
+html.darkmode::-webkit-scrollbar-thumb:hover,
+body.darkmode::-webkit-scrollbar-thumb:hover,
+html.darkmode body::-webkit-scrollbar-thumb:hover,
+body.darkmode html::-webkit-scrollbar-thumb:hover {
+  background: #777 !important;
+}
+
+/* Firefox scrollbar con máxima especificidad para modo oscuro */
+html.darkmode,
+body.darkmode,
+html.darkmode body,
+body.darkmode html {
+  scrollbar-width: thin !important;
+  scrollbar-color: #555 #1a1a1a !important;
+}
+
+/* NUEVO: Reglas de emergencia para el popup principal - aplicar a cualquier elemento con darkmode */
+body.darkmode *::-webkit-scrollbar {
+  width: 8px !important;
+}
+
+body.darkmode *::-webkit-scrollbar-track {
+  background: #1a1a1a !important;
+  border-radius: 4px !important;
+}
+
+body.darkmode *::-webkit-scrollbar-thumb {
+  background: #555 !important;
+  border-radius: 4px !important;
+  border: 1px solid #1a1a1a !important;
+}
+
+body.darkmode *::-webkit-scrollbar-thumb:hover {
+  background: #777 !important;
+}
+
+/* NUEVO: Reglas específicas para el elemento raíz del popup */
+body.darkmode::-webkit-scrollbar,
+html.darkmode::-webkit-scrollbar {
+  width: 8px !important;
+}
+
+body.darkmode::-webkit-scrollbar-track,
+html.darkmode::-webkit-scrollbar-track {
+  background: #1a1a1a !important;
+  border-radius: 4px !important;
+}
+
+body.darkmode::-webkit-scrollbar-thumb,
+html.darkmode::-webkit-scrollbar-thumb {
+  background: #555 !important;
+  border-radius: 4px !important;
+  border: 1px solid #1a1a1a !important;
+}
+
+body.darkmode::-webkit-scrollbar-thumb:hover,
+html.darkmode::-webkit-scrollbar-thumb:hover {
+  background: #777 !important;
+}
+
+/* Estilos de emergencia para modo oscuro - aplicar a cualquier elemento */
+html.darkmode *::-webkit-scrollbar-track,
+body.darkmode *::-webkit-scrollbar-track {
+  background: #1a1a1a !important;
+}
+
+html.darkmode *::-webkit-scrollbar-thumb,
+body.darkmode *::-webkit-scrollbar-thumb {
+  background: #555 !important;
+  border-color: #1a1a1a !important;
+}
+
+html.darkmode *::-webkit-scrollbar-thumb:hover,
+body.darkmode *::-webkit-scrollbar-thumb:hover {
+  background: #777 !important;
+}
+
+/* NUEVO: Regla final con máxima especificidad para el popup principal */
+body.darkmode::-webkit-scrollbar,
+html.darkmode::-webkit-scrollbar,
+body.darkmode html::-webkit-scrollbar,
+html.darkmode body::-webkit-scrollbar,
+body.darkmode *::-webkit-scrollbar,
+html.darkmode *::-webkit-scrollbar {
+  width: 8px !important;
+}
+
+body.darkmode::-webkit-scrollbar-track,
+html.darkmode::-webkit-scrollbar-track,
+body.darkmode html::-webkit-scrollbar-track,
+html.darkmode body::-webkit-scrollbar-track,
+body.darkmode *::-webkit-scrollbar-track,
+html.darkmode *::-webkit-scrollbar-track {
+  background: #1a1a1a !important;
+  border-radius: 4px !important;
+}
+
+body.darkmode::-webkit-scrollbar-thumb,
+html.darkmode::-webkit-scrollbar-thumb,
+body.darkmode html::-webkit-scrollbar-thumb,
+html.darkmode body::-webkit-scrollbar-thumb,
+body.darkmode *::-webkit-scrollbar-thumb,
+html.darkmode *::-webkit-scrollbar-thumb {
+  background: #555 !important;
+  border-radius: 4px !important;
+  border: 1px solid #1a1a1a !important;
+}
+
+body.darkmode::-webkit-scrollbar-thumb:hover,
+html.darkmode::-webkit-scrollbar-thumb:hover,
+body.darkmode html::-webkit-scrollbar-thumb:hover,
+html.darkmode body::-webkit-scrollbar-thumb:hover,
+body.darkmode *::-webkit-scrollbar-thumb:hover,
+html.darkmode *::-webkit-scrollbar-thumb:hover {
+  background: #777 !important;
+}
+
+/* Estilos directos para el popup en modo oscuro - máxima prioridad */
+body.darkmode::-webkit-scrollbar-track {
+  background: #1a1a1a !important;
+  border-radius: 4px !important;
+}
+
+body.darkmode::-webkit-scrollbar-thumb {
+  background: #555 !important;
+  border-radius: 4px !important;
+  border: 1px solid #1a1a1a !important;
+}
+
+body.darkmode::-webkit-scrollbar-thumb:hover {
+  background: #777 !important;
+}
+
+/* Firefox scrollbar directo para modo oscuro */
+body.darkmode {
+  scrollbar-width: thin !important;
+  scrollbar-color: #555 #1a1a1a !important;
+}
+
+/* Estilos para html cuando body tiene darkmode */
+body.darkmode ~ html::-webkit-scrollbar-track,
+html body.darkmode::-webkit-scrollbar-track {
+  background: #1a1a1a !important;
+}
+
+body.darkmode ~ html::-webkit-scrollbar-thumb,
+html body.darkmode::-webkit-scrollbar-thumb {
+  background: #555 !important;
+  border-color: #1a1a1a !important;
+}
+
+body.darkmode ~ html::-webkit-scrollbar-thumb:hover,
+html body.darkmode::-webkit-scrollbar-thumb:hover {
+  background: #777 !important;
+}
+
+/* Estilos de máxima prioridad para cualquier elemento en modo oscuro */
+body.darkmode *::-webkit-scrollbar-track {
+  background: #1a1a1a !important;
+}
+
+body.darkmode *::-webkit-scrollbar-thumb {
+  background: #555 !important;
+  border-color: #1a1a1a !important;
+}
+
+body.darkmode *::-webkit-scrollbar-thumb:hover {
+  background: #777 !important;
+}
+
+/* Addebug section */
+#addebug_section {
+  margin-top: 0.1rem;
+  background: var(--card-bg);
+  border-radius: var(--border-radius);
+  padding: 0.5rem;
+  box-sizing: border-box;
+  text-align: center;
+  box-shadow: var(--box-shadow);
+}
+
+#addebug_videoId {
+  font-family: 'Fira Code', 'Consolas', monospace;
+  font-size: 0.95em;
+  color: var(--light-text);
+  margin-left: 0.5rem;
+}
+
+/* ========== */
+/* BOTONES */
+/* ========== */
+button {
+  background: var(--card-bg);
+  color: var(--text-color);
+  border: 1px solid var(--border-color);
+  border-radius: var(--border-radius);
+  padding: 0.5rem 1rem;
+  cursor: pointer;
+  font-size: 0.75rem;
+  font-weight: 500;
+  transition: var(--transition);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+}
+
+button:hover:not(:disabled) {
+  background: #e9ecef;
+  border-color: #5ecb2c;
+  transform: translateY(-1px);
+}
+
+/* Estilos para botones en modo oscuro */
+body.darkmode button {
+  background: #2a2a2a;
+  color: #e0e0e0;
+  border-color: #444;
+}
+
+body.darkmode button:hover:not(:disabled) {
+  background: #3a3a3a;
+  border-color: #5ecb2c;
+  color: #ffffff;
+}
+
+button:active:not(:disabled) {
+  transform: translateY(0);
+}
+
+button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* Botón copiar info de debug */
+.small-btn {
+  padding: 0.25rem 0.5rem;
+  font-size: 0.65rem;
+  min-width: unset;
+  height: 24px;
+}
+
+/* Botón historial: verde manzana */
+#openHistoryBtn {
+  background: #7ed957;
+  color: #222;
+  font-weight: bold;
+  border-color: var(--success-color);
+}
+
+#openHistoryBtn:hover:not(:disabled) {
+  background: #5ecb2c;
+  color: #fff;
+  transform: translateY(-1px);
+}
+
+/* Botones consultar datos anuncio / video */
+
+#ytAdQueryBtn {
+  border-color: var(--primary-color);
+  background: var(--card-bg);
+  color: var(--primary-color);
+  font-weight: 500;
+  transition: var(--transition);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+}
+
+#ytQueryBtn{
+  border-color: var(--success-color);
+  background: var(--card-bg);
+  color: var(--success-color);
+  font-weight: 500;
+  transition: var(--transition);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+
+  /* background: var(--text-color);
+  color: white;
+  font-weight: 600; */
+  
+  /* border: 1px solid var(--border-color);
+  border-radius: var(--border-radius);
+  padding: 0.5rem 1rem;
+  cursor: pointer;
+  font-size: 0.75rem; */  
+}
+
+#ytQueryBtn:hover:not(:disabled) {
+  background: #e9ecef;
+  border-color: var(--primary-color);
+  transform: translateY(-1px);
+  box-shadow: var(--box-shadow);
+  /*color:var(--text-color);*/
+}
+
+#ytAdQueryBtn:hover:not(:disabled) {
+  background: #e9ecef;
+  border-color: var(--alternative-color1);
+  transform: translateY(-1px);
+  box-shadow: var(--box-shadow);
+  /*color:var(--text-color);*/
+}
+
+/* Estilos para botones de consulta en modo oscuro */
+body.darkmode #ytQueryBtn:hover:not(:disabled) {
+  background: #3a3a3a;
+  border-color: var(--success-color);
+  color: #ffffff;
+}
+
+body.darkmode #ytAdQueryBtn:hover:not(:disabled) {
+  background: #3a3a3a;
+  border-color: var(--primary-color);
+  color: #ffffff;
+}
+
+/* Botón de reset para contadores */
+.reset-btn {
+  width: 30px;
+  height: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  background: var(--card-bg);
+  color: var(--text-color);
+  border: 1px solid var(--border-color);
+  border-radius: var(--border-radius);
+  font-size: 0.65rem;
+  transition: var(--transition);
+}
+
+.reset-btn:hover:not(:disabled) {
+  background: #e9ecef;
+  border-color: #5ecb2c;
+  transform: translateY(-1px);
+}
+
+/* Estilos para botón reset en modo oscuro */
+body.darkmode .reset-btn {
+  background: #2a2a2a;
+  color: #e0e0e0;
+  border-color: #444;
+}
+
+body.darkmode .reset-btn:hover:not(:disabled) {
+  background: #3a3a3a;
+  border-color: #5ecb2c;
+  color: #ffffff;
+}
+
+.reset-btn:active:not(:disabled) {
+  transform: translateY(0);
+}
+
+.reset-btn:disabled {
+  background: #ccc;
+  border-color: #bbb;
+  color: #888;
+}
+
+/* ================= */
+/* EFECTOS VISUALES */
+/* ================= */
+
+/* Ad marker styles */
+#adMarker {
+  position: fixed;
+  top: 5px;
+  right: 5px;
+  padding: 4px 8px;
+  background-color: var(--danger-color);
+  color: white;
+  border-radius: var(--border-radius);
+  font-weight: bold;
+  opacity: 0;
+  transition: opacity 0.3s ease-in-out;
+  pointer-events: none;
+  z-index: 1000;
+}
+
+#adMarker.active {
+  opacity: 1;
+  animation: pulse 1.5s infinite;
+}
+
+#adMarker.hidden {
+  opacity: 0;
+}
+
+/* Toast notifications */
+#toastContainer {
+  position: fixed;
+  top: 10px;
+  right: 10px;
+  z-index: 10000;
+  pointer-events: none;
+}
+
+.toast {
+  background: rgba(0, 0, 0, 0.85);
+  backdrop-filter: blur(5px);
+  color: #fff;
+  padding: 0.75rem 1rem;
+  border-radius: var(--border-radius);
+  margin-bottom: 0.5rem;
+  min-width: 200px;
+  max-width: 300px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+  font-size: 0.9rem;
+  line-height: 1.3;
+  word-wrap: break-word;
+  opacity: 0;
+  transform: translateX(100%);
+  transition: all 0.3s ease;
+  pointer-events: auto;
+  border-left: 4px solid;
+}
+
+.toast.show {
+  opacity: 1;
+  transform: translateX(0);
+  animation: slideIn 0.3s ease-out;
+}
+
+.toast.success {
+  border-left-color: var(--success-color);
+}
+
+.toast.error {
+  border-left-color: var(--danger-color);
+}
+
+.toast.warning {
+  border-left-color: var(--warning-color);
+}
+
+.toast.info {
+  border-left-color: var(--primary-color);
+}
+
+@keyframes slideIn {
+  from { transform: translateX(100%); opacity: 0; }
+  to { transform: translateX(0); opacity: 1; }
+}
+
+/* Loading states and spinners */
+.loading-spinner {
+  display: inline-block;
+  width: 16px;
+  height: 16px;
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  border-top: 2px solid currentColor;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+  margin-right: 0.5rem;
+  vertical-align: middle;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+.btn-loading {
+  position: relative;
+  pointer-events: none;
+  opacity: 0.7;
+}
+
+.btn-loading::before {
+  content: '';
+  position: absolute;
+  left: 8px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 12px;
+  height: 12px;
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  border-top: 2px solid currentColor;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+.loading-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(255, 255, 255, 0.8);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: var(--border-radius);
+  z-index: 100;
+}
+
+.section-loading {
+  position: relative;
+  opacity: 0.6;
+  pointer-events: none;
+}
+
+/* Progressive UI - initially hidden elements */
+.ui-progressive {
+  opacity: 0;
+  transform: translateY(10px);
+  transition: all 0.3s ease;
+}
+
+.ui-progressive.loaded {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* ================= */
+/* ACCESIBILIDAD */
+/* ================= */
+button:focus, input:focus {
+  outline: 2px solid var(--primary-color);
+  outline-offset: 2px;
+}
+
+[role="status"], [aria-live] {
+  color: var(--text-color);
+  font-weight: 500;
+}
+
+[aria-busy="true"]::before {
+  content: '';
+  display: inline-block;
+  width: 1em;
+  height: 1em;
+  border: 2px solid currentColor;
+  border-radius: 50%;
+  border-top-color: transparent;
+  animation: spin 1s linear infinite;
+  margin-right: 0.5em;
+  vertical-align: middle;
+}
+
+/* Toggle switch reutilizable */
+.toggle-switch {
+  position: relative;
+  display: inline-block;
+  width: 46px;
+  height: 24px;
+  vertical-align: middle;
+}
+.toggle-switch input {
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+.toggle-slider {
+  position: absolute;
+  cursor: pointer;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: #ccc;
+  transition: 0.3s;
+  border-radius: 24px;
+}
+.toggle-slider:before {
+  position: absolute;
+  content: "";
+  height: 18px;
+  width: 18px;
+  left: 3px;
+  bottom: 3px;
+  background-color: white;
+  transition: 0.3s;
+  border-radius: 50%;
+}
+.toggle-switch input:checked + .toggle-slider {
+  background-color: var(--primary-color);
+}
+.toggle-switch input:checked + .toggle-slider:before {
+  transform: translateX(22px);
+}
+body.darkmode .toggle-switch input:checked + .toggle-slider {
+  background-color: #5ecb2c;
+}
+
+/* === Alertas de Almacenamiento === */
+.storage-alert {
+  margin: 0.5rem 0;
+  padding: 0.75rem;
+  border-radius: var(--border-radius);
+  border-left: 4px solid;
+  background: var(--card-bg);
+  box-shadow: var(--box-shadow);
+  transition: var(--transition);
+}
+
+.storage-alert-warning {
+  border-left-color: var(--warning-color);
+  background: linear-gradient(135deg, rgba(255, 152, 0, 0.1), transparent);
+}
+
+.storage-alert-error {
+  border-left-color: var(--danger-color);
+  background: linear-gradient(135deg, rgba(229, 57, 53, 0.1), transparent);
+}
+
+.storage-alert-info {
+  border-left-color: var(--success-color);
+  background: linear-gradient(135deg, rgba(44, 151, 201, 0.1), transparent);
+}
+
+.storage-alert-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 0.5rem;
+}
+
+.storage-alert-title {
+  font-weight: 600;
+  color: var(--text-color);
+  margin-left: 0.25rem;
+}
+
+.storage-alert-close {
+  background: none;
+  border: none;
+  color: var(--light-text);
+  cursor: pointer;
+  padding: 0.25rem;
+  border-radius: 3px;
+  transition: var(--transition);
+}
+
+.storage-alert-close:hover {
+  background: var(--border-color);
+  color: var(--text-color);
+}
+
+.storage-alert-content {
+  margin-bottom: 0.5rem;
+}
+
+.storage-alert-content p {
+  margin: 0;
+  color: var(--light-text);
+  font-size: 0.8rem;
+}
+
+.storage-alert-action {
+  color: var(--success-color) !important;
+  font-weight: 500;
+  margin-top: 0.25rem !important;
+}
+
+.storage-progress {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.storage-progress-bar {
+  flex: 1;
+  height: 6px;
+  background: var(--border-color);
+  border-radius: 3px;
+  overflow: hidden;
+}
+
+.storage-progress-fill {
+  height: 100%;
+  background: linear-gradient(90deg, var(--success-color), var(--primary-color));
+  transition: width 0.3s ease;
+}
+
+.storage-alert-warning .storage-progress-fill {
+  background: linear-gradient(90deg, var(--warning-color), #ff6b35);
+}
+
+.storage-alert-error .storage-progress-fill {
+  background: linear-gradient(90deg, var(--danger-color), #d32f2f);
+}
+
+.storage-progress-text {
+  font-size: 0.7rem;
+  color: var(--light-text);
+  min-width: 60px;
+  text-align: right;
+}
+
+/* Modo oscuro para alertas */
+body.darkmode .storage-alert {
+  background: var(--card-bg);
+}
+
+body.darkmode .storage-alert-close:hover {
+  background: var(--border-color);
+}
+
+/* === REGLAS FINALES PARA SCROLLBAR DEL POPUP PRINCIPAL EN MODO OSCURO === */
+/* Estas reglas tienen la máxima prioridad y se aplican al final del archivo */
+
+/* Regla de emergencia para cualquier elemento con darkmode */
+body.darkmode::-webkit-scrollbar,
+html.darkmode::-webkit-scrollbar,
+body.darkmode html::-webkit-scrollbar,
+html.darkmode body::-webkit-scrollbar,
+body.darkmode *::-webkit-scrollbar,
+html.darkmode *::-webkit-scrollbar {
+  width: 8px !important;
+}
+
+body.darkmode::-webkit-scrollbar-track,
+html.darkmode::-webkit-scrollbar-track,
+body.darkmode html::-webkit-scrollbar-track,
+html.darkmode body::-webkit-scrollbar-track,
+body.darkmode *::-webkit-scrollbar-track,
+html.darkmode *::-webkit-scrollbar-track {
+  background: #1a1a1a !important;
+  border-radius: 4px !important;
+}
+
+body.darkmode::-webkit-scrollbar-thumb,
+html.darkmode::-webkit-scrollbar-thumb,
+body.darkmode html::-webkit-scrollbar-thumb,
+html.darkmode body::-webkit-scrollbar-thumb,
+body.darkmode *::-webkit-scrollbar-thumb,
+html.darkmode *::-webkit-scrollbar-thumb {
+  background: #555 !important;
+  border-radius: 4px !important;
+  border: 1px solid #1a1a1a !important;
+}
+
+body.darkmode::-webkit-scrollbar-thumb:hover,
+html.darkmode::-webkit-scrollbar-thumb:hover,
+body.darkmode html::-webkit-scrollbar-thumb:hover,
+html.darkmode body::-webkit-scrollbar-thumb:hover,
+body.darkmode *::-webkit-scrollbar-thumb:hover,
+html.darkmode *::-webkit-scrollbar-thumb:hover {
+  background: #777 !important;
+}
+
+/* Firefox scrollbar para modo oscuro */
+body.darkmode,
+html.darkmode,
+body.darkmode html,
+html.darkmode body {
+  scrollbar-width: thin !important;
+  scrollbar-color: #555 #1a1a1a !important;
+}

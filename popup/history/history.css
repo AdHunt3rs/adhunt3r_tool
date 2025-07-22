@@ -1,0 +1,4771 @@
+/* === VARIABLES GLOBALES === */
+:root {
+  /* Colores Light Mode */
+  --bg-primary: #F5F5F5;
+  --bg-secondary: #FFFFFF;
+  --bg-tertiary: #FAFAFA;
+  --text-primary: #1A1A1A;
+  --text-secondary: #666666;
+  --text-muted: #999999;
+  --accent-primary: #00C4B4;
+  --accent-secondary: #00A693;
+  --accent-tertiary: #E8F8F7;
+  --accent-quaternary: #f59f0b88;
+  
+  /* Estados */
+  --success: #10B981;
+  --warning: #F59E0B;
+  --warning-color: #F59E0B;
+  --danger: #EF4444;
+  --info: #3B82F6;
+  
+  /* Sombras y bordes */
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.05);
+  --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.07);
+  --shadow-lg: 0 10px 15px rgba(0, 0, 0, 0.1);
+  --shadow-xl: 0 20px 25px rgba(0, 0, 0, 0.1);
+  --border-radius: 12px;
+  --border-radius-sm: 8px;
+  --border-radius-lg: 16px;
+  
+  /* Espaciado */
+  --spacing-xs: 4px;
+  --spacing-sm: 8px;
+  --spacing-md: 16px;
+  --spacing-lg: 24px;
+  --spacing-xl: 32px;
+  --spacing-2xl: 48px;
+  
+  /* Transiciones optimizadas para cambios más rápidos */
+  --transition-fast: 80ms ease;
+  --transition-normal: 120ms ease;
+  --transition-slow: 180ms ease;
+  
+  /* Tipografía */
+  --font-size-xs: 0.75rem;
+  --font-size-sm: 0.875rem;
+  --font-size-base: 1rem;
+  --font-size-lg: 1.125rem;
+  --font-size-xl: 1.25rem;
+  --font-size-2xl: 1.5rem;
+  --font-size-3xl: 1.875rem;
+  
+  --font-weight-normal: 400;
+  --font-weight-medium: 500;
+  --font-weight-semibold: 600;
+  --font-weight-bold: 700;
+}
+
+/* Dark Mode */
+[data-theme="dark"] {
+  --bg-primary: #1E1E1E;
+  --bg-secondary: #2A2A2A;
+  --bg-tertiary: #333333;
+  --text-primary: #FFFFFF;
+  --text-secondary: #B0B0B0;
+  --text-muted: #808080;
+  --accent-tertiary: rgba(0, 196, 180, 0.1);
+}
+
+/* === RESET Y BASE === */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+/* === OPTIMIZACIÓN PARA CAMBIO DE TEMA INSTANTÁNEO === */
+
+/* Transiciones optimizadas para cambio de tema */
+[data-theme] * {
+  transition: background-color var(--transition-fast), 
+              color var(--transition-fast), 
+              border-color var(--transition-fast), 
+              box-shadow var(--transition-fast);
+}
+
+/* Elementos que no necesitan transición durante cambio de tema */
+[data-theme] .loading-spinner,
+[data-theme] .progress-spinner,
+[data-theme] .progress-bar,
+[data-theme] .progress-fill,
+[data-theme] .toggle-switch,
+[data-theme] .toggle-slider,
+[data-theme] .theme-toggle {
+  transition: none;
+}
+
+/* Prevenir FOUC (Flash of Unstyled Content) */
+html {
+  transition: none;
+}
+
+body {
+  transition: background-color var(--transition-fast), color var(--transition-fast);
+}
+
+/* === PREVENCIÓN DE SALTOS DURANTE CAMBIO DE TEMA === */
+
+/* Asegurar que el tema se aplique antes de que se muestre el contenido */
+html[data-theme] {
+  opacity: 1;
+  transition: opacity 0.1s ease;
+}
+
+/* Prevenir cambios bruscos en elementos críticos */
+.app-header,
+.filter-bar,
+.action-bar,
+.main-content,
+.history-card,
+.card-header,
+.card-content,
+.btn-primary,
+.btn-secondary,
+.btn-danger,
+.btn-success,
+.btn-export,
+.filter-select,
+.search-input,
+.duration-input,
+.toggle-switch,
+.toggle-slider {
+  will-change: background-color, color, border-color, box-shadow;
+}
+
+/* Optimizar elementos críticos para cambio instantáneo */
+.app-header,
+.filter-bar,
+.action-bar,
+.main-content,
+.history-card,
+.card-header,
+.card-content,
+.btn-primary,
+.btn-secondary,
+.btn-danger,
+.btn-success,
+.btn-export,
+.filter-select,
+.search-input,
+.duration-input {
+  transition: background-color var(--transition-fast), 
+              color var(--transition-fast), 
+              border-color var(--transition-fast), 
+              box-shadow var(--transition-fast);
+}
+
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+  background: var(--bg-primary);
+  color: var(--text-primary);
+  line-height: 1.6;
+  font-size: var(--font-size-base);
+  transition: background-color var(--transition-fast), color var(--transition-fast);
+  overflow-x: hidden;
+}
+
+.app-container {
+  min-height: 100vh;
+  height: 100vh; /* Ocupar toda la altura de la ventana */
+  display: flex;
+  flex-direction: column;
+  overflow-y: auto; /* Scroll en el contenedor principal para modo single */
+}
+
+/* === HEADER === */
+.app-header {
+  background: var(--bg-secondary);
+  border-bottom: 1px solid var(--accent-tertiary);
+  padding: 8px 16px;
+  box-shadow: var(--shadow-sm);
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  height: 48px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 8px;
+  box-sizing: border-box;
+  transition: background-color var(--transition-fast), border-color var(--transition-fast);
+}
+
+.header-content {
+  max-width: 1200px;
+  margin: 0 auto;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: var(--spacing-sm);
+  width: 100%;
+}
+
+.logo-section {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-md);
+}
+
+.logo-icon {
+  font-size: var(--font-size-2xl);
+  color: var(--accent-primary);
+}
+
+.logo-section h1 {
+  font-size: var(--font-size-2xl);
+  font-weight: var(--font-weight-bold);
+  color: var(--text-primary);
+}
+
+.header-stats {
+  display: flex;
+  gap: var(--spacing-xl);
+}
+
+.stat-item {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+  font-size: var(--font-size-sm);
+  color: var(--text-secondary);
+  font-weight: var(--font-weight-medium);
+  padding: 4px 8px;
+  background: var(--accent-tertiary);
+  border-radius: var(--border-radius-sm);
+  white-space: nowrap;
+  line-height: 1.3;
+  height: 28px;
+  box-sizing: border-box;
+}
+
+.stat-item i {
+  color: var(--accent-primary);
+}
+
+/* === CONFIGURACIÓN DEL HISTORIAL === */
+.history-config {
+  position: relative;
+  display: flex;
+  align-items: center;
+  margin-left: var(--spacing-lg);
+}
+
+.config-btn {
+  background: var(--bg-tertiary);
+  color: var(--text-secondary);
+  border: 1px solid var(--accent-tertiary);
+  border-radius: var(--border-radius-sm);
+  padding: var(--spacing-sm);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+}
+
+.config-btn:hover {
+  background: var(--accent-tertiary);
+  color: var(--accent-primary);
+  border-color: var(--accent-primary);
+  transform: translateY(-1px);
+}
+
+.config-menu {
+  position: absolute;
+  top: 100%;
+  right: 0;
+  background: var(--bg-secondary);
+  border: 1px solid var(--accent-tertiary);
+  border-radius: var(--border-radius);
+  box-shadow: var(--shadow-xl);
+  z-index: 1000;
+  min-width: 320px;
+  max-width: 400px;
+  max-height: 80vh;
+  overflow-y: auto;
+  padding: var(--spacing-lg);
+  margin-top: var(--spacing-xs);
+  scrollbar-width: thin;
+  scrollbar-color: var(--accent-primary) var(--bg-tertiary);
+}
+
+.config-menu::-webkit-scrollbar {
+  width: 6px;
+}
+
+.config-menu::-webkit-scrollbar-track {
+  background: var(--bg-tertiary);
+  border-radius: 3px;
+}
+
+.config-menu::-webkit-scrollbar-thumb {
+  background: var(--accent-primary);
+  border-radius: 3px;
+}
+
+.config-menu::-webkit-scrollbar-thumb:hover {
+  background: var(--accent-secondary);
+}
+
+.config-menu-header {
+  margin-bottom: var(--spacing-lg);
+  padding-bottom: var(--spacing-sm);
+  border-bottom: 1px solid var(--accent-tertiary);
+}
+
+.config-menu-header h4 {
+  margin: 0;
+  font-size: var(--font-size-lg);
+  font-weight: var(--font-weight-semibold);
+  color: var(--text-primary);
+}
+
+.config-option {
+  margin-bottom: var(--spacing-sm);
+  position: relative;
+}
+
+.config-option label {
+  display: block;
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-medium);
+  color: var(--text-secondary);
+  margin-bottom: var(--spacing-xs);
+}
+
+.config-option input[type="number"] {
+  width: 30%;
+  padding: var(--spacing-sm) var(--spacing-md);
+  border: 1px solid var(--accent-tertiary);
+  border-radius: var(--border-radius-sm);
+  background: var(--bg-tertiary);
+  color: var(--text-primary);
+  font-size: var(--font-size-sm);
+  transition: all var(--transition-fast);
+}
+
+.config-option input[type="number"]:focus {
+  border-color: var(--accent-primary);
+  outline: none;
+  box-shadow: 0 0 0 2px var(--accent-tertiary);
+}
+
+.config-tooltip {
+  position: relative;
+  display: inline-block;
+  margin-top: var(--spacing-xs);
+}
+
+.config-tooltip i {
+  color: var(--accent-primary);
+  font-size: var(--font-size-xs);
+  cursor: default;
+}
+
+.config-tooltip .tooltip-text {
+  visibility: hidden;
+  width: 280px;
+  background-color: var(--text-primary);
+  color: var(--bg-secondary);
+  text-align: center;
+  border-radius: var(--border-radius-sm);
+  padding: var(--spacing-sm);
+  position: absolute;
+  z-index: 1001;
+  bottom: 125%;
+  left: 50%;
+  margin-left: -140px;
+  font-size: var(--font-size-xs);
+  line-height: 1.4;
+  opacity: 0;
+  transition: opacity var(--transition-fast);
+}
+
+.config-tooltip .tooltip-text::after {
+  content: "";
+  position: absolute;
+  top: 100%;
+  left: 50%;
+  margin-left: -5px;
+  border-width: 5px;
+  border-style: solid;
+  border-color: var(--text-primary) transparent transparent transparent;
+}
+
+.config-tooltip:hover .tooltip-text {
+  visibility: visible;
+  opacity: 1;
+}
+
+.config-note {
+  background: var(--accent-tertiary);
+  border-radius: var(--border-radius-sm);
+  padding: var(--spacing-sm);
+  margin-bottom: var(--spacing-lg);
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+}
+
+.config-note i {
+  color: var(--accent-primary);
+  font-size: var(--font-size-sm);
+}
+
+.config-note span {
+  font-size: var(--font-size-xs);
+  color: var(--text-secondary);
+  font-weight: var(--font-weight-medium);
+}
+
+/* Mejorar la experiencia de scroll */
+.config-menu {
+  scroll-behavior: smooth;
+}
+
+/* Mejorar la legibilidad en pantallas pequeñas */
+@media (max-width: 480px) {
+  .config-menu {
+    font-size: var(--font-size-sm);
+  }
+}
+
+/* === INDICADOR DE DATOS GUARDADOS EN CONFIGURACIÓN === */
+.config-storage-info {
+  background: var(--bg-tertiary);
+  border: 1px solid var(--accent-tertiary);
+  border-radius: var(--border-radius-sm);
+  padding: var(--spacing-xs);
+  margin-bottom: var(--spacing-sm);
+}
+
+.storage-info-header {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+  margin-bottom: var(--spacing-sm);
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-semibold);
+  color: var(--text-primary);
+}
+
+.storage-info-header i {
+  color: var(--accent-primary);
+}
+
+.storage-info-content {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-sm);
+}
+
+.storage-stats {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: var(--spacing-xs);
+}
+
+.storage-stat-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: var(--font-size-xs);
+  padding: var(--spacing-xs);
+  background: var(--bg-secondary);
+  border-radius: var(--border-radius-sm);
+  border: 1px solid var(--accent-tertiary);
+}
+
+.storage-stat-item.total {
+  grid-column: 1 / -1;
+  background: var(--accent-tertiary);
+  border-color: var(--accent-primary);
+  font-weight: var(--font-weight-semibold);
+}
+
+.stat-label {
+  color: var(--text-secondary);
+  font-weight: var(--font-weight-medium);
+}
+
+.stat-value {
+  color: var(--text-primary);
+  font-weight: var(--font-weight-semibold);
+}
+
+.storage-size-info {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: var(--spacing-xs) var(--spacing-sm);
+  background: var(--bg-secondary);
+  border-radius: var(--border-radius-sm);
+  border: 1px solid var(--accent-tertiary);
+  font-size: var(--font-size-xs);
+}
+
+.size-label {
+  color: var(--text-secondary);
+  font-weight: var(--font-weight-medium);
+}
+
+.size-value {
+  color: var(--accent-primary);
+  font-weight: var(--font-weight-semibold);
+}
+
+
+
+/* === INDICADOR DE ALMACENAMIENTO === */
+.storage-indicator {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-left: var(--spacing-xs);
+  min-width: 120px;
+  position: relative;
+  gap: var(--spacing-xs);
+}
+
+/* === INDICADOR DE DATOS POR TIPO === */
+.data-type-indicator {
+  display: flex;
+  align-items: center;
+  margin-left: var(--spacing-sm);
+  min-width: 100px;
+  position: relative;
+}
+
+.data-type-info {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-xs);
+  margin-bottom: var(--spacing-xs);
+}
+
+.data-type-icon {
+  color: var(--accent-primary);
+  font-size: var(--font-size-sm);
+}
+
+.data-type-text {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  line-height: 1;
+  gap: 2px;
+}
+
+.data-type-item {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-xs);
+  font-size: var(--font-size-xs);
+  color: var(--text-secondary);
+  font-weight: var(--font-weight-medium);
+}
+
+.data-type-item i {
+  color: var(--accent-primary);
+  font-size: var(--font-size-xs);
+  min-width: 12px;
+}
+
+.data-type-item span {
+  color: var(--text-primary);
+  font-weight: var(--font-weight-semibold);
+}
+
+/* Tooltip para el indicador de datos por tipo */
+.data-type-indicator {
+  cursor: default;
+}
+
+.data-type-indicator::after {
+  content: attr(data-tooltip);
+  position: absolute;
+  bottom: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  background: var(--text-primary);
+  color: var(--bg-secondary);
+  padding: var(--spacing-xs) var(--spacing-sm);
+  border-radius: var(--border-radius-sm);
+  font-size: var(--font-size-xs);
+  white-space: nowrap;
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity var(--transition-fast);
+  z-index: 1000;
+  margin-bottom: var(--spacing-xs);
+}
+
+.data-type-indicator::before {
+  content: '';
+  position: absolute;
+  bottom: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  border: 4px solid transparent;
+  border-top-color: var(--text-primary);
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity var(--transition-fast);
+  z-index: 1000;
+  margin-bottom: calc(var(--spacing-xs) - 4px);
+}
+
+.data-type-indicator:hover::after,
+.data-type-indicator:hover::before {
+  opacity: 1;
+  visibility: visible;
+}
+
+.storage-info {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-xs);
+  margin-bottom: var(--spacing-xs);
+}
+
+.storage-icon {
+  color: var(--accent-primary);
+  font-size: var(--font-size-sm);
+}
+
+.storage-text {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  line-height: 1;
+  gap: var(--spacing-xs);
+  flex-wrap: wrap;
+  margin-bottom: var(--spacing-xs);
+}
+
+#storagePercentage {
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-semibold);
+  color: var(--text-primary);
+  white-space: nowrap;
+}
+
+.storage-label {
+  font-size: var(--font-size-xs);
+  color: var(--text-secondary);
+  font-weight: var(--font-weight-medium);
+  white-space: nowrap;
+}
+
+.storage-size {
+  font-size: var(--font-size-xs);
+  color: var(--text-muted);
+  font-weight: var(--font-weight-medium);
+  white-space: nowrap;
+  margin-bottom: var(--spacing-xs);
+}
+
+.storage-bar {
+  width: 100%;
+  height: 4px;
+  background: var(--accent-tertiary);
+  border-radius: 2px;
+  overflow: hidden;
+  position: relative;
+}
+
+.storage-fill {
+  height: 100%;
+  background: linear-gradient(90deg, var(--accent-primary), var(--accent-secondary));
+  border-radius: 2px;
+  transition: width 0.3s ease;
+  position: relative;
+}
+
+/* Estados del indicador de almacenamiento */
+.storage-indicator.warning .storage-fill {
+  background: linear-gradient(90deg, var(--warning-color), #ff6b35);
+}
+
+.storage-indicator.critical .storage-fill {
+  background: linear-gradient(90deg, var(--danger-color), #d32f2f);
+  animation: pulse 1.5s infinite;
+}
+
+.storage-indicator.warning .storage-icon,
+.storage-indicator.critical .storage-icon {
+  color: var(--warning-color);
+}
+
+.storage-indicator.critical .storage-icon {
+  color: var(--danger-color);
+}
+
+/* Tooltip para el indicador de almacenamiento */
+.storage-indicator {
+  cursor: default;
+}
+
+.storage-indicator::after {
+  content: attr(data-tooltip);
+  position: absolute;
+  bottom: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  background: var(--text-primary);
+  color: var(--bg-secondary);
+  padding: var(--spacing-xs) var(--spacing-sm);
+  border-radius: var(--border-radius-sm);
+  font-size: var(--font-size-xs);
+  white-space: nowrap;
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity var(--transition-fast);
+  z-index: 1000;
+  margin-bottom: var(--spacing-xs);
+}
+
+.storage-indicator::before {
+  content: '';
+  position: absolute;
+  bottom: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  border: 4px solid transparent;
+  border-top-color: var(--text-primary);
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity var(--transition-fast);
+  z-index: 1000;
+  margin-bottom: calc(var(--spacing-xs) - 4px);
+}
+
+.storage-indicator:hover::after,
+.storage-indicator:hover::before {
+  opacity: 1;
+  visibility: visible;
+}
+
+/* === DIÁLOGO DE CONFIRMACIÓN === */
+.confirmation-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.7);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 2000;
+  backdrop-filter: blur(4px);
+  animation: fadeIn var(--transition-normal) ease-out;
+}
+
+.confirmation-dialog {
+  background: var(--bg-secondary);
+  border-radius: var(--border-radius);
+  box-shadow: var(--shadow-xl);
+  padding: var(--spacing-xl);
+  max-width: 500px;
+  width: 90%;
+  max-height: 80vh;
+  overflow-y: auto;
+  animation: slideIn var(--transition-normal) ease-out;
+  border: 1px solid var(--accent-tertiary);
+}
+
+.confirmation-dialog h3 {
+  margin: 0;
+  color: var(--warning-color);
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+  font-size: var(--font-size-xl);
+  font-weight: var(--font-weight-bold);
+}
+
+.confirmation-dialog ul {
+  margin: var(--spacing-md) 0;
+  padding-left: var(--spacing-xl);
+  color: var(--text-primary);
+}
+
+.confirmation-dialog li {
+  margin-bottom: var(--spacing-xs);
+  line-height: 1.5;
+}
+
+.confirmation-dialog .dialog-actions {
+  display: flex;
+  gap: var(--spacing-md);
+  justify-content: flex-end;
+  margin-top: var(--spacing-xl);
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes slideIn {
+  from { 
+    opacity: 0;
+    transform: translateY(-20px) scale(0.95);
+  }
+  to { 
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+/* === BARRAS DE FILTROS Y ACCIONES === */
+.filter-bar {
+  background: var(--bg-secondary);
+  border-bottom: 1px solid var(--accent-tertiary);
+  padding: 8px 16px;
+  box-shadow: var(--shadow-sm);
+  position: sticky;
+  top: 48px;
+  z-index: 90;
+  height: 48px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 8px;
+  box-sizing: border-box;
+}
+
+.action-bar {
+  background: var(--bg-secondary);
+  border-bottom: 1px solid var(--accent-tertiary);
+  padding: 8px 16px;
+  box-shadow: var(--shadow-sm);
+  position: sticky;
+  top: 96px;
+  z-index: 80;
+  height: 48px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 8px;
+  box-sizing: border-box;
+}
+
+/* Regla base para desktop (>1200px) */
+@media (min-width: 1201px) {
+  body:not(.two-column-mode) .action-bar {
+    position: sticky !important;
+    top: 93px !important;
+    z-index: 80 !important;
+  }
+}
+
+/* === CONFIGURACIÓN UNIFICADA DE BARRAS SUPERIORES === */
+
+/* Las barras mantienen la misma apariencia en ambos modos */
+/* No hay configuraciones específicas de modo para las barras */
+
+/* === AJUSTES ESPECÍFICOS PARA ELEMENTOS DE BARRAS === */
+
+/* === ELEMENTOS INTERNOS DE LAS BARRAS === */
+
+/* Grupos de elementos */
+.filter-group, .action-group {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-wrap: wrap;
+  height: 100%;
+  min-height: 28px;
+}
+
+/* Elementos individuales */
+.filter-item {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  position: relative;
+  height: 100%;
+  min-height: 28px;
+}
+
+/* Inputs y selects */
+.filter-select, .search-input, .duration-input {
+  border: 1px solid var(--accent-tertiary);
+  background: var(--bg-tertiary);
+  color: var(--text-primary);
+  padding: 4px 8px;
+  border-radius: 3px;
+  font-size: 12px;
+  transition: all 0.2s ease;
+  outline: none;
+  height: 26px;
+  min-width: 80px;
+  line-height: 1.2;
+  box-sizing: border-box;
+}
+
+.filter-select:focus, .search-input:focus, .duration-input:focus {
+  border-color: var(--accent-primary);
+  box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.2);
+}
+
+/* Botones */
+.btn-primary, .btn-secondary, .btn-danger, .btn-success, .btn-export {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 4px 8px;
+  border: none;
+  border-radius: 3px;
+  font-size: 11px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  text-decoration: none;
+  outline: none;
+  height: 26px;
+  min-width: 60px;
+  line-height: 1.2;
+  box-sizing: border-box;
+  white-space: nowrap;
+}
+
+/* === ESTILOS ESPECÍFICOS DE BOTONES === */
+
+.btn-primary {
+  background: var(--accent-primary);
+  color: white;
+}
+
+.btn-primary:hover {
+  background: var(--accent-secondary);
+  transform: translateY(-1px);
+}
+
+.btn-secondary {
+  background: var(--bg-tertiary);
+  color: var(--text-primary);
+  border: 1px solid var(--accent-tertiary);
+}
+
+.btn-secondary:hover {
+  background: var(--bg-secondary);
+  border-color: var(--accent-secondary);
+}
+
+.btn-danger {
+  background: #dc2626;
+  color: white;
+}
+
+.btn-danger:hover {
+  background: #b91c1c;
+  transform: translateY(-1px);
+}
+
+.btn-success {
+  background: #059669;
+  color: white;
+}
+
+.btn-success:hover {
+  background: #047857;
+  transform: translateY(-1px);
+}
+
+.btn-export {
+  background: var(--accent-primary);
+  color: white;
+}
+
+.btn-export:hover {
+  background: var(--accent-secondary);
+  transform: translateY(-1px);
+}
+
+/* === RESPONSIVE DESIGN PARA BARRAS === */
+
+/* Ventanas medianas */
+@media (max-width: 1024px) {
+  .app-header, .filter-bar, .action-bar {
+    padding: 6px 12px;
+    gap: 6px;
+  }
+  
+  .filter-group, .action-group {
+    gap: 6px;
+  }
+  
+  .filter-select, .search-input, .duration-input {
+    min-width: 100px;
+    height: 32px;
+    font-size: 13px;
+    padding: 4px 8px;
+  }
+  
+  .btn-primary, .btn-secondary, .btn-danger, .btn-success, .btn-export {
+    min-width: 70px;
+    height: 32px;
+    font-size: 13px;
+    padding: 4px 8px;
+  }
+}
+
+/* Ventanas pequeñas */
+@media (max-width: 768px) {
+  .app-header, .filter-bar, .action-bar {
+    padding: 4px 8px;
+    gap: 4px;
+    height: auto;
+    min-height: 48px;
+  }
+  
+  .filter-group, .action-group {
+    gap: 4px;
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+  
+  .filter-select, .search-input, .duration-input {
+    min-width: 80px;
+    height: 28px;
+    font-size: 12px;
+    padding: 3px 6px;
+  }
+  
+  .btn-primary, .btn-secondary, .btn-danger, .btn-success, .btn-export {
+    min-width: 60px;
+    height: 28px;
+    font-size: 12px;
+    padding: 3px 6px;
+  }
+}
+
+/* Ventanas muy pequeñas */
+@media (max-width: 480px) {
+  .app-header, .filter-bar, .action-bar {
+    padding: 3px 6px;
+    gap: 3px;
+    height: auto;
+    min-height: 44px;
+  }
+  
+  .filter-group, .action-group {
+    gap: 3px;
+    flex-wrap: wrap;
+    justify-content: center;
+    width: 100%;
+  }
+  
+  .filter-select, .search-input, .duration-input {
+    min-width: 60px;
+    height: 24px;
+    font-size: 11px;
+    padding: 2px 4px;
+  }
+  
+  .btn-primary, .btn-secondary, .btn-danger, .btn-success, .btn-export {
+    min-width: 50px;
+    height: 24px;
+    font-size: 11px;
+    padding: 2px 4px;
+  }
+}
+
+.filter-icon {
+  color: var(--accent-primary);
+  font-size: var(--font-size-xs);
+  min-width: 16px;
+}
+
+.filter-select:focus, .search-input:focus, .duration-input:focus {
+  border-color: var(--accent-primary);
+  box-shadow: 0 0 0 3px var(--accent-tertiary);
+}
+
+.duration-inputs {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+}
+
+.duration-input {
+  width: 80px;
+}
+
+.duration-separator {
+  color: var(--text-muted);
+  font-weight: var(--font-weight-medium);
+}
+
+.duration-unit {
+  color: var(--text-secondary);
+  font-size: var(--font-size-xs);
+}
+
+.search-input {
+  min-width: 200px;
+}
+
+/* === BOTONES === */
+
+.btn-primary {
+  background: var(--accent-primary);
+  color: white;
+}
+
+.btn-primary:hover {
+  background: var(--accent-secondary);
+  transform: translateY(-1px);
+  box-shadow: var(--shadow-md);
+}
+
+.btn-secondary {
+  background: var(--bg-tertiary);
+  color: var(--text-secondary);
+  border: 1px solid var(--accent-tertiary);
+}
+
+.btn-secondary:hover {
+  background: var(--accent-tertiary);
+  color: var(--text-primary);
+}
+
+.btn-danger {
+  background: var(--danger);
+  color: white;
+}
+
+.btn-danger:hover {
+  background: #DC2626;
+  transform: translateY(-1px);
+}
+
+.btn-success {
+  background: var(--success);
+  color: white;
+}
+
+.btn-success:hover {
+  background: #059669;
+  transform: translateY(-1px);
+}
+
+.btn-export {
+  background: var(--bg-tertiary);
+  color: var(--text-secondary);
+  border: 1px solid var(--accent-tertiary);
+  min-width: 80px;
+  justify-content: center;
+}
+
+.btn-export:hover {
+  background: var(--accent-tertiary);
+  color: var(--accent-primary);
+  border-color: var(--accent-primary);
+}
+
+.btn-export:disabled, .btn-danger:disabled, .btn-success:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  transform: none;
+}
+
+/* === CONTROLES DE SELECCIÓN === */
+.selection-controls {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-md);
+}
+
+.checkbox-container {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  cursor: pointer;
+  user-select: none;
+  height: 100%;
+  min-height: 28px;
+  padding: 1px 0;
+}
+
+.checkbox-container input[type="checkbox"] {
+  display: none;
+}
+
+.checkmark {
+  width: 14px;
+  height: 14px;
+  border: 1px solid var(--accent-tertiary);
+  border-radius: var(--spacing-xs);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all var(--transition-fast);
+  background: var(--bg-tertiary);
+}
+
+.checkbox-container input:checked + .checkmark {
+  background: var(--accent-primary);
+  border-color: var(--accent-primary);
+}
+
+.checkbox-container input:checked + .checkmark::after {
+  content: "\f00c";
+  font-family: "Font Awesome 6 Free";
+  font-weight: 900;
+  color: white;
+  font-size: var(--font-size-xs);
+}
+
+.checkbox-label {
+  font-size: 11px;
+  font-weight: var(--font-weight-medium);
+  color: var(--text-primary);
+}
+
+.selection-count {
+  font-size: 10px;
+  color: var(--text-muted);
+  background: var(--accent-tertiary);
+  padding: 1px 4px;
+  border-radius: var(--border-radius-sm);
+}
+
+/* === TOGGLE DE TEMA === */
+.toggle-switch {
+  position: relative;
+  display: inline-block;
+  width: 60px;
+  height: 30px;
+}
+
+.toggle-switch input {
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+.toggle-slider {
+  position: absolute;
+  cursor: pointer;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: var(--bg-tertiary);
+  border: 2px solid var(--accent-tertiary);
+  transition: background-color var(--transition-fast), border-color var(--transition-fast);
+  border-radius: 30px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 var(--spacing-sm);
+}
+
+.toggle-slider:before {
+  position: absolute;
+  content: "";
+  height: 22px;
+  width: 22px;
+  left: 2px;
+  bottom: 2px;
+  background: var(--accent-primary);
+  transition: transform var(--transition-fast), background-color var(--transition-fast);
+  border-radius: 50%;
+  box-shadow: var(--shadow-sm);
+}
+
+.toggle-switch input:checked + .toggle-slider:before {
+  transform: translateX(30px);
+}
+
+.light-icon, .dark-icon {
+  font-size: var(--font-size-xs);
+  color: var(--text-muted);
+  transition: var(--transition-fast);
+}
+
+.toggle-switch input:checked + .toggle-slider .light-icon {
+  color: var(--accent-primary);
+}
+
+.toggle-switch input:not(:checked) + .toggle-slider .dark-icon {
+  color: var(--accent-primary);
+}
+
+/* === CONTENIDO PRINCIPAL === */
+.main-content {
+  flex: 1;
+  padding: var(--spacing-xl);
+  max-width: 1200px;
+  margin: 0 auto;
+  width: 100%;
+  margin-top: 0;
+  padding-top: var(--spacing-lg);
+  /* Remover altura fija y scroll para modo single */
+}
+
+/* Configuración específica para modo two-column */
+.two-column-mode .main-content {
+  height: calc(100vh - 144px); /* Ajustar para las barras más altas */
+  min-height: calc(100vh - 144px);
+  overflow-y: auto; /* Scroll solo en modo two-column */
+}
+
+/* Estilos para el botón de cambio de vista */
+.view-mode-toggle button {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 11px;
+  font-weight: 500;
+  line-height: 1.2;
+  white-space: nowrap;
+}
+
+.cards-container {
+  display: grid;
+  flex-direction: column;
+  gap: var(--spacing-sm);
+}
+
+/* === TARJETAS === */
+.history-card {
+  background: var(--bg-secondary);
+  border-radius: var(--border-radius);
+  box-shadow: var(--shadow-sm);
+  transition: background-color var(--transition-fast), border-color var(--transition-fast), box-shadow var(--transition-fast);
+  border: 1px solid transparent;
+  overflow: hidden;
+  animation: fadeInUp var(--transition-fast) ease-out;
+}
+
+.history-card:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-lg);
+  border-color: var(--accent-tertiary);
+}
+
+.history-card.selected {
+  border-color: var(--accent-primary);
+  box-shadow: 0 0 0 3px var(--accent-tertiary);
+}
+
+.card-header {
+  padding: var(--spacing-lg);
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-md);
+  cursor: pointer;
+  user-select: none;
+}
+
+.card-checkbox {
+  flex-shrink: 0;
+}
+
+.card-thumbnail {
+  width: 100%;
+  max-width: 320px;
+  aspect-ratio: 16/9;
+  border-radius: var(--border-radius-sm);
+  object-fit: cover;
+  background: var(--bg-tertiary);
+  flex-shrink: 0;
+  border: 1px solid var(--accent-tertiary);
+}
+
+.card-content {
+  flex: 1;
+  min-width: 0;
+}
+
+.card-title {
+  font-size: var(--font-size-lg);
+  font-weight: var(--font-weight-semibold);
+  color: var(--text-primary);
+  margin-bottom: var(--spacing-xs);
+  line-height: 1.4;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  transition: color var(--transition-fast);
+}
+
+.card-meta {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-md);
+  margin-bottom: var(--spacing-sm);
+}
+
+.card-channel {
+  color: var(--text-secondary);
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-medium);
+  transition: color var(--transition-fast);
+}
+
+.card-timestamp {
+  color: var(--text-muted);
+  font-size: var(--font-size-xs);
+  transition: color var(--transition-fast);
+}
+
+.card-tags {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+  flex-wrap: wrap;
+}
+
+.card-actions {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+  flex-shrink: 0;
+}
+
+.expand-btn {
+  background: none;
+  border: none;
+  color: var(--text-muted);
+  font-size: var(--font-size-lg);
+  cursor: pointer;
+  padding: var(--spacing-sm);
+  border-radius: var(--border-radius-sm);
+  transition: background-color var(--transition-fast), color var(--transition-fast), transform var(--transition-fast);
+}
+
+.expand-btn:hover {
+  background: var(--accent-tertiary);
+  color: var(--accent-primary);
+}
+
+.expand-btn.expanded {
+  transform: rotate(180deg);
+}
+
+/* === CONTENIDO EXPANDIBLE === */
+.card-details {
+  border-top: 1px solid var(--accent-tertiary);
+  padding: var(--spacing-sm);
+  background: var(--bg-tertiary);
+  opacity: 0;
+  max-height: 0;
+  overflow: hidden;
+  transition: all var(--transition-normal);
+}
+
+.card-details.expanded {
+  opacity: 1;
+  max-height: 800px !important; /* === NUEVO: Altura aumentada para evitar scroll === */
+  min-height: 400px !important; /* === NUEVO: Altura mínima para evitar scroll === */
+}
+
+/* === CAJA DE JSON === */
+.json-container {
+  background: var(--bg-primary);
+  border: 1px solid var(--accent-tertiary);
+  border-radius: var(--border-radius-sm);
+  padding: var(--spacing-md);
+  margin-top: var(--spacing-md);
+  font-family: 'Courier New', Consolas, 'Liberation Mono', monospace;
+  font-size: var(--font-size-xs);
+  line-height: 1.4;
+  /* Restaurar scroll interno para la caja JSON */
+  overflow-y: auto;
+  min-height: 400px;
+  max-height: 600px; /* Altura máxima para activar scroll */
+  min-height: 0;
+}
+
+/* === ENLACE DEL ANUNCIANTE === */
+.advertiser-link {
+  color: var(--accent-primary);
+  text-decoration: none;
+  font-weight: var(--font-weight-medium);
+  border-bottom: 1px solid transparent;
+  transition: all var(--transition-fast);
+  word-break: break-all;
+}
+
+.advertiser-link:hover {
+  color: var(--accent-secondary);
+  border-bottom-color: var(--accent-secondary);
+  text-decoration: none;
+}
+
+.advertiser-link:visited {
+  color: var(--accent-primary);
+}
+
+.json-content {
+  white-space: pre-wrap;
+  word-wrap: break-word;
+  word-break: break-all;
+  color: var(--text-secondary);
+  /* Contenido JSON para scroll interno */
+  height: auto;
+  overflow: visible;
+}
+
+/* === SCROLLBAR PARA CAJA JSON === */
+.json-container::-webkit-scrollbar {
+  width: 8px;
+}
+
+.json-container::-webkit-scrollbar-track {
+  background: var(--bg-tertiary);
+  border-radius: 4px;
+}
+
+.json-container::-webkit-scrollbar-thumb {
+  background: var(--accent-tertiary);
+  border-radius: 4px;
+}
+
+.json-container::-webkit-scrollbar-thumb:hover {
+  background: var(--accent-primary);
+}
+
+/* === SCROLLBAR PARA CONTENIDO DE DETALLES EN VISTA SPLIT === */
+/* Solo mostrar scrollbar cuando hay scroll activo */
+.two-column-mode .detail-content::-webkit-scrollbar {
+  width: 6px;
+}
+
+.two-column-mode .detail-content::-webkit-scrollbar-track {
+  background: var(--bg-secondary);
+  border-radius: 6px;
+}
+
+.two-column-mode .detail-content::-webkit-scrollbar-thumb {
+  background: var(--accent-primary);
+  border-radius: 6px;
+  border: 1px solid var(--bg-secondary);
+}
+
+.two-column-mode .detail-content::-webkit-scrollbar-thumb:hover {
+  background: var(--accent-secondary);
+}
+
+/* Contenedor interno para scroll en panel de detalles */
+.two-column-mode .detail-content {
+  flex: 1;
+  overflow-y: visible; /* Sin scroll por defecto - mostrar detalles completos */
+  padding: var(--spacing-md);
+  height: 100%; /* Expandir a todo el espacio disponible */
+  min-height: 0; /* Importante para que flex funcione correctamente */
+  /* Asegurar que los detalles se muestren completos */
+  display: flex;
+  flex-direction: column;
+  /* Asegurar que el contenido se distribuya correctamente */
+  justify-content: flex-start;
+  /* Asegurar que el contenido se expanda completamente */
+  max-height: none !important;
+  overflow: visible !important;
+}
+
+/* Firefox support para el contenido de detalles */
+.two-column-mode .detail-content {
+  scrollbar-width: thin;
+  scrollbar-color: var(--accent-primary) var(--bg-secondary);
+}
+
+/* === AJUSTES PARA MOSTRAR DETALLES COMPLETOS === */
+.two-column-mode .detail-content h3 {
+  /* Título siempre visible */
+  flex-shrink: 0;
+  margin-bottom: var(--spacing-md);
+  /* Asegurar que el título se muestre completo */
+  height: auto;
+  overflow: visible;
+}
+
+.two-column-mode .details-grid {
+  /* Grid de detalles que se expande a todo el espacio disponible */
+  flex: 1; /* Expandir a todo el espacio disponible */
+  margin-bottom: var(--spacing-md);
+  /* Asegurar que los detalles se muestren completos */
+  height: auto;
+  overflow: visible;
+  /* Asegurar que ocupe todo el espacio vertical disponible */
+  min-height: 0;
+  /* Asegurar que se muestre completo */
+  max-height: none !important;
+  display: grid !important;
+  grid-template-columns: repeat(3, 1fr) !important;
+  gap: var(--spacing-sm) var(--spacing-md) !important;
+}
+
+.two-column-mode .detail-actions {
+  /* Botones siempre visibles */
+  flex-shrink: 0;
+  margin-bottom: var(--spacing-md);
+  /* Asegurar que los botones se muestren completos */
+  height: auto;
+  overflow: visible;
+}
+
+.two-column-mode .json-container {
+  /* JSON que se abre debajo sin comprimir la sección superior */
+  flex: none; /* No usar flex */
+  height: auto; /* Altura automática */
+  min-height: 0; /* Permite que se reduzca si es necesario */
+  /* Mantener scroll interno */
+  overflow-y: auto;
+  max-height: 300px; /* Altura máxima reducida para dejar más espacio a los detalles */
+  /* Asegurar que se abra debajo sin afectar la sección superior */
+  margin-top: var(--spacing-md);
+}
+
+/* === SCROLL CONDICIONAL PARA VENTANAS PEQUEÑAS === */
+/* En ventanas normales, los detalles se muestran completos */
+@media (min-height: 601px) {
+  .two-column-mode .detail-content {
+    overflow-y: visible; /* Sin scroll - detalles completos */
+  }
+  
+  .two-column-mode .detail-content h3 {
+    flex-shrink: 0; /* Título siempre visible */
+  }
+  
+  .two-column-mode .details-grid {
+    flex-shrink: 0; /* Detalles siempre visibles */
+  }
+  
+  .two-column-mode .detail-actions {
+    flex-shrink: 0; /* Botones siempre visibles */
+  }
+}
+
+/* Para ventanas pequeñas */
+@media (max-height: 600px) {
+  .two-column-mode .detail-content {
+    overflow-y: visible; /* Mantener sin scroll - detalles siempre completos */
+  }
+}
+
+/* Para ventanas extremadamente pequeñas */
+@media (max-height: 400px) {
+  .two-column-mode .detail-content {
+    overflow-y: auto; /* Solo activar scroll en ventanas muy pequeñas */
+  }
+  
+  .two-column-mode .detail-content h3 {
+    flex-shrink: 1; /* Permitir que el título se reduzca si es necesario */
+  }
+  
+  .two-column-mode .details-grid {
+    flex-shrink: 1; /* Permitir que los detalles se reduzcan si es necesario */
+  }
+  
+  .two-column-mode .detail-actions {
+    flex-shrink: 1; /* Permitir que los botones se reduzcan si es necesario */
+  }
+}
+
+/* === SCROLLBAR PARA COLUMNA DE TARJETAS EN VISTA SPLIT === */
+.two-column-mode #cardsContainer::-webkit-scrollbar {
+  width: 8px;
+}
+
+.two-column-mode #cardsContainer::-webkit-scrollbar-track {
+  background: var(--bg-tertiary);
+  border-radius: 8px;
+}
+
+.two-column-mode #cardsContainer::-webkit-scrollbar-thumb {
+  background: var(--text-muted);
+  border-radius: 8px;
+  border: 2px solid var(--bg-tertiary);
+}
+
+.two-column-mode #cardsContainer::-webkit-scrollbar-thumb:hover {
+  background: var(--text-secondary);
+}
+
+/* Firefox support para la columna de tarjetas */
+.two-column-mode #cardsContainer {
+  scrollbar-width: thin;
+  scrollbar-color: var(--text-muted) var(--bg-tertiary);
+}
+
+/* === SCROLLBAR MEJORADO PARA VISTA SINGLE === */
+body:not(.two-column-mode) #cardsContainer::-webkit-scrollbar {
+  width: 6px;
+}
+
+body:not(.two-column-mode) #cardsContainer::-webkit-scrollbar-track {
+  background: var(--bg-secondary);
+  border-radius: 3px;
+  margin: 2px 0;
+}
+
+body:not(.two-column-mode) #cardsContainer::-webkit-scrollbar-thumb {
+  background: var(--accent-tertiary);
+  border-radius: 3px;
+  border: 1px solid var(--bg-secondary);
+  transition: background-color 0.2s ease;
+}
+
+body:not(.two-column-mode) #cardsContainer::-webkit-scrollbar-thumb:hover {
+  background: var(--accent-secondary);
+}
+
+body:not(.two-column-mode) #cardsContainer::-webkit-scrollbar-thumb:active {
+  background: var(--accent-primary);
+}
+
+/* Firefox support para vista single */
+body:not(.two-column-mode) #cardsContainer {
+  scrollbar-width: thin;
+  scrollbar-color: var(--accent-tertiary) var(--bg-secondary);
+}
+
+.details-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: var(--spacing-lg);
+  margin-bottom: var(--spacing-lg);
+}
+
+/* Forzar grid de 3 columnas en modo split */
+body.two-column-mode .details-grid {
+  display: grid !important;
+  grid-template-columns: repeat(3, 1fr) !important;
+  gap: var(--spacing-sm) var(--spacing-md) !important;
+  width: 100% !important;
+  max-width: none !important;
+  max-height: none !important;
+  min-height: 400px !important; /* === NUEVO: Altura mínima para evitar scroll === */
+  overflow-y: visible !important;
+  overflow-x: hidden !important;
+  flex: none !important; /* No usar flex para que no comprima el JSON */
+}
+
+/* Mejorar distribución en modo split - ya definido arriba */
+
+body.two-column-mode .detail-item {
+  display: flex !important;
+  flex-direction: column !important; /* Cambiar a columna para mejor aprovechamiento */
+  justify-content: flex-start !important;
+  align-items: flex-start !important;
+  gap: var(--spacing-xs) !important; /* Espaciado más compacto */
+  padding: var(--spacing-xs) !important; /* Padding más compacto */
+  border-bottom: 1px solid var(--accent-tertiary) !important;
+  /* Asegurar que cada elemento ocupe su espacio */
+  height: auto;
+  min-height: 0;
+}
+
+body.two-column-mode .detail-label {
+  flex: none !important;
+  font-weight: var(--font-weight-semibold) !important;
+  color: var(--text-secondary) !important;
+  text-align: left !important;
+  font-size: var(--font-size-xs) !important; /* Texto más pequeño */
+  text-transform: uppercase !important;
+  letter-spacing: 0.5px !important;
+}
+
+body.two-column-mode .detail-value {
+  flex: 1 !important;
+  text-align: left !important;
+  word-break: break-word !important;
+  font-size: var(--font-size-sm) !important; /* Texto más pequeño */
+  line-height: 1.3 !important; /* Línea más compacta */
+}
+
+.detail-item {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-xs);
+}
+
+.detail-label {
+  font-size: var(--font-size-xs);
+  color: var(--text-muted);
+  font-weight: var(--font-weight-medium);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.detail-value {
+  font-size: var(--font-size-sm);
+  color: var(--text-primary);
+  font-weight: var(--font-weight-medium);
+}
+
+.detail-actions {
+  display: flex;
+  justify-content: center;
+  gap: var(--spacing-sm);
+  flex-wrap: wrap;
+}
+
+.action-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--spacing-xs);
+  padding: var(--spacing-sm) var(--spacing-md);
+  background: var(--bg-secondary);
+  color: var(--text-secondary);
+  border: 1px solid var(--accent-tertiary);
+  border-radius: var(--border-radius-sm);
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-medium);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  text-decoration: none;
+}
+
+.action-btn:hover {
+  background: var(--accent-tertiary);
+  color: var(--accent-primary);
+  border-color: var(--accent-primary);
+  transform: translateY(-1px);
+}
+
+.action-btn.primary {
+  background: var(--accent-primary);
+  color: white;
+  border-color: var(--accent-primary);
+}
+
+.action-btn.primary:hover {
+  background: var(--accent-secondary);
+}
+
+/* === TAGS === */
+.tag {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--spacing-xs);
+  padding: var(--spacing-xs) var(--spacing-sm);
+  background: var(--accent-tertiary);
+  color: var(--accent-primary);
+  border-radius: var(--border-radius-sm);
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-medium);
+  border: 1px solid transparent;
+}
+
+/* === BOTÓN IR AL VIDEO === */
+.video-link-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--spacing-xs);
+  padding: var(--spacing-xs) var(--spacing-md);
+  background: var(--accent-primary);
+  color: white;
+  border-radius: var(--border-radius-sm);
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-semibold);
+  text-decoration: none;
+  border: 1px solid var(--accent-primary);
+  transition: all var(--transition-fast);
+  box-shadow: var(--shadow-sm);
+}
+
+.video-link-btn:hover {
+  background: var(--accent-secondary);
+  border-color: var(--accent-secondary);
+  transform: translateY(-1px);
+  box-shadow: var(--shadow-md);
+  color: white;
+}
+
+.video-link-btn:active {
+  transform: translateY(0);
+  box-shadow: var(--shadow-sm);
+}
+
+.tag.type-video {
+  background: rgba(20, 192, 255, 0.15);
+  color: #1499ff;
+  border: 1px solid rgba(20, 145, 255, 0.3);
+  font-weight: var(--font-weight-semibold);
+}
+
+.tag.type-ad {
+  background: rgba(156, 227, 40, 0.15);
+  color: #a6cd32;
+  border: 1px solid rgba(50, 205, 50, 0.3);
+  font-weight: var(--font-weight-semibold);
+}
+
+.tag.ad-subtype {
+  background: rgba(255, 20, 147, 0.15);
+  color: #c65e95;
+  /* border: 1px solid rgba(255, 20, 147, 0.3); */
+  /* font-weight: var(--font-weight-medium); */
+}
+
+.tag.type-favorite {
+  background: rgba(245, 158, 11, 0.1);
+  color: #F59E0B;
+}
+
+.tag.status-public {
+  background: rgba(16, 185, 129, 0.1);
+  color: #10B981;
+}
+
+.tag.status-private {
+  background: rgba(107, 114, 128, 0.1);
+  color: #6B7280;
+}
+
+.tag.status-unlisted {
+  background: rgba(245, 158, 11, 0.1);
+  color: #F59E0B;
+}
+
+.tag-duration {
+  height: 1.5vw;
+  display: inline-flex;
+  align-items: center;
+  gap: var(--spacing-xs);
+  padding: var(--spacing-xs) var(--spacing-sm);
+  background: rgba(255, 255, 255, 0.301);
+  color: #000000;
+  border: 1px solid rgba(2, 181, 252, 0.444);
+  border-radius: var(--border-radius-sm);
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-medium);
+}
+
+/* === NUEVO: Tag de duración para anuncios === */
+.tag-duration[data-type="ad"] {
+  color: #000000;
+  background: rgba(255, 255, 255, 0.301);
+  border: 1px solid rgba(166, 255, 0, 0.301);
+}
+
+/* === NUEVO: Botón de quitar favoritos con color quaternary === */
+.action-btn.remove-from-favorites-btn {
+  background: var(--accent-quaternary);
+  color: white;
+  border-color: var(--accent-quaternary);
+}
+
+.action-btn.remove-from-favorites-btn:hover {
+  background: var(--accent-quaternary);
+  color: white;
+  border-color: var(--accent-quaternary);
+  opacity: 0.8;
+}
+
+/* === UNIFICACIÓN DE BOTONES EN MODO SINGLE === */
+/* Asegurar que action-btn y video-link-btn tengan la misma forma en modo single */
+body:not(.two-column-mode) .action-btn,
+body:not(.two-column-mode) .video-link-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--spacing-xs);
+  padding: var(--spacing-sm) var(--spacing-md);
+  border-radius: var(--border-radius-sm);
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-medium);
+  text-decoration: none;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  border: 1px solid transparent;
+  min-height: 36px;
+}
+
+/* Estilos específicos para botones de acción en modo single */
+body:not(.two-column-mode) .action-btn {
+  background: var(--bg-secondary);
+  color: var(--text-secondary);
+  border-color: var(--accent-tertiary);
+}
+
+body:not(.two-column-mode) .action-btn:hover {
+  background: var(--accent-tertiary);
+  color: var(--accent-primary);
+  border-color: var(--accent-quaternary);
+  transform: translateY(-1px);
+}
+
+/* === EXCEPCIÓN: Botón de quitar favoritos en modo single === */
+/* Mantener el color quaternary específico para el botón de quitar favoritos */
+body:not(.two-column-mode) .action-btn.remove-from-favorites-btn {
+  background: var(--accent-quaternary);
+  color: white;
+  border-color: var(--accent-quaternary);
+}
+
+body:not(.two-column-mode) .action-btn.remove-from-favorites-btn:hover {
+  background: var(--accent-quaternary);
+  color: white;
+  border-color: var(--accent-quaternary);
+  opacity: 0.8;
+  transform: translateY(-1px);
+}
+
+/* Estilos específicos para botones de video en modo single */
+body:not(.two-column-mode) .video-link-btn {
+  background: var(--bg-secondary);
+  color: var(--text-secondary);
+  border-color: var(--accent-tertiary);
+}
+
+body:not(.two-column-mode) .video-link-btn:hover {
+  background: var(--accent-tertiary);
+  color: var(--accent-primary);
+  border-color: var(--accent-primary);
+  transform: translateY(-1px);
+}
+
+/* === NUEVO: Estilos para avatar del anunciante === */
+.advertiser-avatar {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid var(--accent-tertiary);
+  box-shadow: var(--shadow-sm);
+}
+
+.advertiser-avatar:hover {
+  border-color: var(--accent-primary);
+  box-shadow: var(--shadow-md);
+  transform: scale(1.05);
+  transition: all var(--transition-fast);
+}
+
+/* === ESTADOS VACÍO Y CARGA === */
+.empty-state, .loading-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: var(--spacing-2xl);
+  text-align: center;
+  color: var(--text-muted);
+}
+
+.empty-icon {
+  font-size: var(--font-size-3xl);
+  color: var(--accent-primary);
+  margin-bottom: var(--spacing-lg);
+}
+
+.empty-state h3 {
+  font-size: var(--font-size-xl);
+  font-weight: var(--font-weight-semibold);
+  color: var(--text-secondary);
+  margin-bottom: var(--spacing-sm);
+}
+
+.empty-state p {
+  font-size: var(--font-size-sm);
+  color: var(--text-muted);
+}
+
+.loading-spinner {
+  width: 40px;
+  height: 40px;
+  border: 3px solid var(--accent-tertiary);
+  border-top: 3px solid var(--accent-primary);
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+  margin-bottom: var(--spacing-lg);
+}
+
+/* === OVERLAY DE PROGRESO === */
+.progress-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.7);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  backdrop-filter: blur(4px);
+}
+
+.progress-content {
+  background: var(--bg-secondary);
+  padding: var(--spacing-xl);
+  border-radius: var(--border-radius);
+  box-shadow: var(--shadow-xl);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--spacing-lg);
+  min-width: 300px;
+}
+
+.progress-spinner {
+  width: 32px;
+  height: 32px;
+  border: 3px solid var(--accent-tertiary);
+  border-top: 3px solid var(--accent-primary);
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+.progress-bar {
+  width: 100%;
+  height: 6px;
+  background: var(--accent-tertiary);
+  border-radius: 3px;
+  overflow: hidden;
+}
+
+.progress-fill {
+  height: 100%;
+  background: var(--accent-primary);
+  border-radius: 3px;
+  transition: width var(--transition-normal);
+  width: 0%;
+}
+
+/* === ANIMACIONES === */
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+/* === RESPONSIVE DESIGN === */
+
+/* Desktop grande (>1200px) */
+@media (min-width: 1201px) {
+  .config-menu {
+    max-width: 450px;
+    max-height: 75vh;
+  }
+  
+  .config-storage-info {
+    padding: var(--spacing-sm);
+  }
+  
+  .storage-stats {
+    grid-template-columns: repeat(2, 1fr);
+    gap: var(--spacing-sm);
+  }
+}
+
+/* Tablet grande y desktop pequeño (769px - 1200px) */
+@media (max-width: 1200px) and (min-width: 769px) {
+  /* Mantener sticky en todos los tamaños de tablet */
+  .filter-bar {
+    position: sticky !important;
+    top: 36px !important;
+    z-index: 90 !important;
+  }
+  
+  body:not(.two-column-mode) .action-bar {
+    position: sticky !important;
+    top: 68px !important;
+    z-index: 80 !important;
+  }
+}
+
+/* Tablet (481px - 768px) */
+@media (max-width: 768px) and (min-width: 481px) {
+  .config-menu {
+    max-width: 350px;
+    max-height: 70vh;
+  }
+  
+  .config-storage-info {
+    padding: var(--spacing-sm);
+  }
+  
+  .storage-stats {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  .app-header {
+    padding: calc(var(--spacing-md)) var(--spacing-lg);
+  }
+  
+  .header-content {
+    flex-direction: column;
+    gap: var(--spacing-md);
+    text-align: center;
+  }
+  
+  .header-stats {
+    gap: var(--spacing-lg);
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+  
+  .filter-bar, .action-bar {
+    padding: var(--spacing-md) var(--spacing-lg);
+    flex-direction: column;
+    align-items: stretch;
+    gap: var(--spacing-md);
+  }
+  
+  /* Mantener sticky en tablets */
+  .filter-bar {
+    position: sticky !important;
+    top: 36px !important;
+    z-index: 90 !important;
+  }
+  
+  body:not(.two-column-mode) .action-bar {
+    position: sticky !important;
+    top: 68px !important;
+    z-index: 80 !important;
+  }
+}
+
+/* Móvil grande (481px - 768px) - mismas reglas que tablet */
+@media (max-width: 768px) {
+  .app-header {
+    padding: calc(var(--spacing-md)) var(--spacing-lg);
+  }
+  
+  .header-content {
+    flex-direction: column;
+    gap: var(--spacing-md);
+    text-align: center;
+  }
+  
+  .header-stats {
+    gap: var(--spacing-lg);
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+  
+  .history-config {
+    margin-left: 0;
+    margin-top: var(--spacing-sm);
+  }
+  
+  .config-menu {
+    right: auto;
+    left: 0;
+    min-width: 280px;
+    max-width: calc(100vw - 32px);
+    max-height: calc(100vh - 100px);
+  }
+  
+  .config-tooltip .tooltip-text {
+    width: 240px;
+    margin-left: -120px;
+  }
+  
+  /* Indicador de almacenamiento en móvil */
+  .storage-indicator {
+    margin-left: 0;
+    margin-top: var(--spacing-sm);
+    min-width: 60px;
+  }
+  
+  /* Indicador de datos por tipo en móvil */
+  .data-type-indicator {
+    margin-left: 0;
+    margin-top: var(--spacing-sm);
+    min-width: 100px;
+  }
+  
+  .data-type-text {
+    font-size: var(--font-size-xs);
+  }
+  
+  .data-type-item {
+    font-size: 10px;
+  }
+  
+  .data-type-item i {
+    font-size: 10px;
+  }
+  
+  .storage-text {
+    font-size: var(--font-size-xs);
+  }
+  
+  #storagePercentage {
+    font-size: var(--font-size-xs);
+  }
+  
+  .storage-label {
+    font-size: 10px;
+  }
+  
+  .storage-size {
+    font-size: 10px;
+  }
+  
+  .filter-bar, .action-bar {
+    padding: var(--spacing-md) var(--spacing-lg);
+    flex-direction: column;
+    align-items: stretch;
+    gap: var(--spacing-md);
+  }
+  
+  /* Mantener sticky excepto en móviles muy pequeños */
+  .filter-bar {
+    position: sticky !important;
+    top: 36px !important;
+    z-index: 90 !important;
+  }
+  
+  body:not(.two-column-mode) .action-bar {
+    position: sticky !important;
+    top: 68px !important;
+    z-index: 80 !important;
+  }
+  
+  .filter-group, .action-group {
+    flex-direction: column;
+    align-items: stretch;
+    gap: var(--spacing-md);
+  }
+  
+  .main-content {
+    padding: var(--spacing-lg);
+  }
+  
+  .card-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: var(--spacing-md);
+  }
+  
+  .card-meta {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: var(--spacing-xs);
+  }
+  
+  .details-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .detail-actions {
+    flex-direction: column;
+  }
+  
+  .search-input {
+    min-width: auto;
+  }
+  
+  .duration-inputs {
+    flex-wrap: wrap;
+  }
+  
+  /* Hamburger menu para la segunda barra en móvil */
+  .action-bar {
+    position: relative;
+  }
+  
+  .mobile-menu-toggle {
+    display: block;
+    background: none;
+    border: none;
+    color: var(--text-primary);
+    font-size: var(--font-size-lg);
+    cursor: pointer;
+    padding: var(--spacing-sm);
+    border-radius: var(--border-radius-sm);
+    transition: background-color var(--transition-fast);
+  }
+  
+  .mobile-menu-toggle:hover {
+    background: var(--accent-tertiary);
+  }
+  
+  .mobile-menu-content {
+    display: none;
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    background: var(--bg-secondary);
+    border: 1px solid var(--accent-tertiary);
+    border-radius: var(--border-radius);
+    box-shadow: var(--shadow-lg);
+    z-index: 1000;
+    padding: var(--spacing-md);
+  }
+  
+  .mobile-menu-content.active {
+    display: block;
+  }
+  
+  .mobile-menu-section {
+    margin-bottom: var(--spacing-md);
+  }
+  
+  .mobile-menu-section:last-child {
+    margin-bottom: 0;
+  }
+  
+  .mobile-menu-title {
+    font-size: var(--font-size-sm);
+    font-weight: var(--font-weight-semibold);
+    color: var(--text-secondary);
+    margin-bottom: var(--spacing-sm);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+  
+  .mobile-menu-items {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-sm);
+  }
+}
+
+@media (max-width: 480px) {
+  .logo-section h1 {
+    font-size: var(--font-size-xl);
+  }
+  
+  /* Desactivar sticky solo en móviles muy pequeños */
+  .filter-bar {
+    position: relative !important;
+    top: auto !important;
+  }
+  
+  .action-bar,
+  body:not(.two-column-mode) .action-bar,
+  body.two-column-mode .action-bar {
+    position: relative !important;
+    top: auto !important;
+  }
+  
+  .card-title {
+    font-size: var(--font-size-base);
+  }
+  
+  .export-actions {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: var(--spacing-sm);
+    width: 100%;
+  }
+  
+  .card-header {
+    padding: var(--spacing-md);
+  }
+  
+  .card-details {
+    padding: var(--spacing-md);
+  }
+  
+  .filter-item {
+    flex-direction: column;
+    align-items: stretch;
+    gap: var(--spacing-xs);
+  }
+  
+  .filter-icon {
+    align-self: flex-start;
+  }
+  
+  .duration-inputs {
+    justify-content: space-between;
+  }
+  
+  .duration-input {
+    flex: 1;
+    min-width: 0;
+  }
+  
+  .stat-item {
+    font-size: var(--font-size-xs);
+  }
+  
+  .tag {
+    font-size: 10px;
+    padding: 2px 6px;
+  }
+  
+  .action-btn {
+    font-size: 10px;
+    padding: 4px 8px;
+  }
+  
+  .checkbox-container {
+    font-size: 10px;
+  }
+  
+  .expand-btn {
+    font-size: 10px;
+    padding: 4px 8px;
+  }
+  
+  /* Indicador de almacenamiento en pantallas muy pequeñas */
+  .storage-indicator {
+    min-width: 50px;
+  }
+  
+  /* Indicador de datos por tipo en pantallas muy pequeñas */
+  .data-type-indicator {
+    min-width: 80px;
+  }
+  
+  .data-type-item {
+    font-size: 8px;
+  }
+  
+  .data-type-item i {
+    font-size: 8px;
+  }
+  
+  .storage-info {
+    gap: 2px;
+  }
+  
+  .storage-icon {
+    font-size: 10px;
+  }
+  
+  #storagePercentage {
+    font-size: 10px;
+  }
+  
+  .storage-label {
+    font-size: 8px;
+  }
+  
+  .storage-size {
+    font-size: 8px;
+  }
+  
+  .storage-bar {
+    height: 3px;
+  }
+  
+  /* Indicador de configuración en pantallas muy pequeñas */
+  .config-storage-info {
+    padding: var(--spacing-sm);
+  }
+  
+  /* Menú de configuración en pantallas muy pequeñas */
+  .config-menu {
+    min-width: 250px;
+    max-width: calc(100vw - 16px);
+    max-height: calc(100vh - 80px);
+    padding: var(--spacing-md);
+  }
+  
+  .config-menu-header h4 {
+    font-size: var(--font-size-base);
+  }
+  
+  .config-option {
+    margin-bottom: var(--spacing-sm);
+  }
+  
+  .config-option label {
+    font-size: var(--font-size-xs);
+  }
+  
+  .config-option input[type="number"] {
+    padding: var(--spacing-xs) var(--spacing-sm);
+    font-size: var(--font-size-xs);
+  }
+  
+  .config-tooltip .tooltip-text {
+    width: 200px;
+    margin-left: -100px;
+    font-size: 10px;
+  }
+  
+
+  
+  .storage-stats {
+    grid-template-columns: 1fr;
+    gap: var(--spacing-xs);
+  }
+  
+  .storage-stat-item {
+    font-size: 10px;
+    padding: 4px var(--spacing-xs);
+  }
+  
+  .storage-size-info {
+    font-size: 10px;
+    padding: 4px var(--spacing-xs);
+  }
+}
+
+/* === MEJORAS ADICIONALES PARA MÓVIL === */
+@media (max-width: 768px) {
+  /* Mejorar touch targets */
+  .btn-primary, .btn-secondary, .btn-danger, .btn-success, .btn-export {
+    min-height: 44px;
+    padding: var(--spacing-md) var(--spacing-lg);
+  }
+  
+  .action-btn {
+    min-height: 36px;
+  }
+  
+  .expand-btn {
+    min-width: 44px;
+    min-height: 44px;
+  }
+  
+  /* Mejorar legibilidad */
+  .card-title {
+    line-height: 1.3;
+  }
+  
+  .card-meta {
+    line-height: 1.4;
+  }
+  
+  /* Espaciado optimizado */
+  .cards-container {
+    gap: var(--spacing-md);
+  }
+  
+  .main-content {
+    padding: var(--spacing-md);
+  }
+  
+  /* Scroll suave */
+  html {
+    scroll-behavior: smooth;
+  }
+  
+  /* Mejorar contraste en móvil */
+  .text-muted {
+    color: var(--text-secondary);
+  }
+}
+
+/* === DARK MODE ESPECÍFICO PARA MÓVIL === */
+@media (max-width: 768px) {
+  [data-theme="dark"] {
+    --bg-primary: #000000;
+    --bg-secondary: #1A1A1A;
+    --bg-tertiary: #2A2A2A;
+  }
+  
+  [data-theme="dark"] .mobile-menu-content {
+    border-color: var(--accent-primary);
+  }
+  
+  [data-theme="dark"] .card-thumbnail {
+    border-color: var(--accent-primary);
+  }
+}
+
+/* === ANIMACIONES ESPECÍFICAS PARA MÓVIL === */
+@media (max-width: 768px) {
+  .history-card {
+    transition: all var(--transition-fast);
+  }
+  
+  .history-card:active {
+    transform: scale(0.98);
+  }
+  
+  .mobile-menu-content {
+    animation: slideDown var(--transition-normal) ease-out;
+  }
+  
+  @keyframes slideDown {
+    from {
+      opacity: 0;
+      transform: translateY(-10px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+}
+
+/* === AJUSTES MEJORADOS MODO DOS COLUMNAS === */
+.two-column-mode .main-content {
+  display: flex;
+  gap: var(--spacing-lg);
+  max-width: none;
+  margin: 0;
+  padding: var(--spacing-lg) var(--spacing-lg);
+  width: 100%;
+  height: calc(100vh - 168px); /* Ajustar altura para las barras superiores rehechas (56+56+56) */
+  min-height: calc(100vh - 168px); /* Asegurar altura mínima */
+  margin-top: var(--spacing-sm); /* Margen superior para separación */
+}
+
+.two-column-mode #cardsContainer {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-sm);
+  width: 34%;
+  max-width: 360px;
+  overflow-y: auto;
+  max-height: calc(100vh - 144px); /* Ajustar altura para las barras más altas */
+  padding-right: var(--spacing-sm);
+}
+
+.two-column-mode #detailPane {
+  flex: 1 1 auto;
+  background: var(--bg-secondary);
+  border-radius: var(--border-radius);
+  box-shadow: var(--shadow-sm);
+  padding: var(--spacing-sm);
+  
+  overflow-y: auto; /* Scroll cuando sea necesario en toda la columna derecha */
+  max-height: calc(100vh - 144px); /* Ajustar altura para las barras más altas */
+  display: flex;
+  flex-direction: column;
+  height: calc(100vh - 144px); /* Altura ajustada para las barras más altas */
+  /* Asegurar que el contenido no se corte */
+  box-sizing: border-box !important;
+  /* Asegurar que el JSON container tenga espacio suficiente */
+  min-height: 0 !important;
+}
+
+/* === AJUSTES PARA VENTANAS PEQUEÑAS === */
+
+/* Para ventanas muy pequeñas, ajustar el scroll */
+@media (max-height: 500px) {
+  .two-column-mode #detailPane {
+    overflow-y: auto !important; /* Forzar scroll cuando sea necesario */
+    max-height: calc(100vh - 20px) !important; /* Dejar un pequeño margen */
+    padding-bottom: var(--spacing-lg) !important; /* Padding inferior extra para visibilidad */
+  }
+}
+
+/* Ajustar layout interno de la tarjeta */
+.two-column-mode .history-card {
+  display: flex;
+  flex-direction: column;
+  padding: var(--spacing-sm);
+  min-height: 140px;
+}
+
+/* Mantener layout horizontal para modo single */
+
+.two-column-mode .card-header {
+  flex-direction: column;
+  gap: var(--spacing-xs);
+  padding: 0;
+  align-items: flex-start;
+  width: 100%;
+}
+
+/* Restaurar header horizontal para modo single */
+.card-header:not(.two-column-mode .card-header) {
+  padding: var(--spacing-sm);
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-md);
+  cursor: pointer;
+  user-select: none;
+}
+
+/* Fila superior: checkbox + thumbnail */
+.two-column-mode .card-header-top {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+  width: 100%;
+}
+
+.two-column-mode .thumbnail-container {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-xs);
+}
+
+.two-column-mode .thumbnail-actions {
+  display: flex;
+  gap: var(--spacing-xs);
+  justify-content: center;
+}
+
+.two-column-mode .card-thumbnail {
+  width: 155px;
+  /* max-width: 120px; */
+  object-fit: cover;
+}
+
+/* Restaurar thumbnail original para modo single */
+.card-thumbnail:not(.two-column-mode .card-thumbnail) {
+  width: 100%;
+  max-width: 300px;
+  aspect-ratio: 16/9;
+  border-radius: var(--border-radius-sm);
+  object-fit: cover;
+  background: var(--bg-tertiary);
+  flex-shrink: 0;
+  border: 1px solid var(--accent-tertiary);
+}
+
+/* Asegurar que el contenido puede ocupar espacio */
+.two-column-mode .card-content {
+  flex: 1;
+  min-width: 0;
+}
+
+/* Restaurar content original para modo single */
+.card-content:not(.two-column-mode .card-content) {
+  flex: 1;
+  min-width: 0;
+}
+
+/* Título legible en dos líneas */
+.two-column-mode .card-title {
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-semibold);
+  -webkit-line-clamp: 2;
+  line-clamp: 2;
+  margin-bottom: 2px;
+}
+
+/* Restaurar título original para modo single */
+.card-title:not(.two-column-mode .card-title) {
+  font-size: var(--font-size-lg);
+  font-weight: var(--font-weight-semibold);
+  color: var(--text-primary);
+  margin-bottom: var(--spacing-xs);
+  line-height: 1.4;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+/* Meta con wrap */
+.two-column-mode .card-meta {
+  flex-wrap: wrap;
+  gap: var(--spacing-xs);
+  font-size: var(--font-size-xs);
+  margin-bottom: 2px;
+}
+
+/* Restaurar meta original para modo single */
+.card-meta:not(.two-column-mode .card-meta) {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-md);
+  margin-bottom: var(--spacing-sm);
+}
+
+/* Asegurar tags envuelven correctamente */
+.two-column-mode .card-tags {
+  flex-wrap: wrap;
+  gap: 4px;
+  align-items: center;
+}
+
+/* Restaurar tags original para modo single */
+.card-tags:not(.two-column-mode .card-tags) {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+  flex-wrap: wrap;
+}
+
+/* Tags más pequeños y compactos */
+.two-column-mode .card-tags .tag {
+  font-size: 0.65rem;
+  padding: 2px 4px;
+}
+
+/* Botón YouTube más compacto */
+.two-column-mode .video-link-btn.icon-only {
+  width: 28px;
+  height: 28px;
+}
+
+/* Icon button compacto (estrella / inbox) */
+.two-column-mode .icon-btn {
+  background: var(--bg-tertiary);
+  border: 1px solid var(--accent-tertiary);
+  width: 28px;
+  height: 28px;
+  border-radius: var(--border-radius-sm);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--text-secondary);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  font-size: var(--font-size-base);
+  padding: 0;
+}
+
+.two-column-mode .icon-btn:hover {
+  background: var(--accent-tertiary);
+  color: var(--accent-primary);
+  border-color: var(--accent-primary);
+  transform: translateY(-1px);
+}
+
+/* Botón de quitar favoritos en modo split */
+.two-column-mode .icon-btn.remove-from-favorites-btn {
+  background: var(--accent-quaternary);
+  border-color: var(--accent-quaternary);
+  color: white;
+}
+
+.two-column-mode .icon-btn.remove-from-favorites-btn:hover {
+  background: var(--accent-quaternary);
+  border-color: var(--accent-quaternary);
+  color: white;
+  opacity: 0.8;
+  transform: translateY(-1px);
+}
+
+/* Ocultar expand-btn y detalles ya definido antes, mantener */
+
+/* === ACCESIBILIDAD === */
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* === IMPRESIÓN === */
+@media print {
+  .filter-bar,
+  .action-bar,
+  .card-actions,
+  .expand-btn,
+  .progress-overlay {
+    display: none !important;
+  }
+  
+  .history-card {
+    break-inside: avoid;
+    box-shadow: none;
+    border: 1px solid #000;
+  }
+  
+  .card-details {
+    opacity: 1 !important;
+    max-height: none !important;
+  }
+}
+
+/* === Ajustes extra para tarjetas en modo dos columnas === */
+body.two-column-mode, html.two-column-mode {
+  height: 100vh;
+  overflow: hidden;
+}
+
+.two-column-mode #cardsContainer {
+  /* Ancho fijo más amplio y sin posibilidad de encogerse */
+  width: 530px;
+  max-width: 530px;
+  flex: 0 0 530px;
+}
+
+/* Ocultar acciones laterales para usar iconos dentro de etiquetas */
+.two-column-mode .card-actions {
+  display: none;
+}
+
+/* Botón de YouTube icon-only dentro de la lista compacta */
+.two-column-mode .video-link-btn.icon-only {
+  gap: 0;
+  padding: var(--spacing-xs);
+  width: 28px;
+  justify-content: center;
+}
+
+.two-column-mode .video-link-btn.icon-only i {
+  font-size: var(--font-size-base);
+}
+
+.two-column-mode .card-title {
+  -webkit-line-clamp: 2;
+  line-clamp: 2;
+  font-size: var(--font-size-sm);
+}
+
+.two-column-mode .card-meta {
+  flex-wrap: wrap;
+  gap: var(--spacing-xs);
+  font-size: var(--font-size-xs);
+}
+
+/* Tags más pequeños y compactos */
+.two-column-mode .card-tags {
+  gap: var(--spacing-xs);
+  margin-top: 2px;
+  flex-wrap: wrap;
+}
+
+.two-column-mode .card-tags .tag {
+  font-size: 0.65rem;
+  padding: 2px 4px;
+}
+
+/* Botón YouTube más compacto */
+.two-column-mode .video-link-btn.icon-only {
+  width: 28px;
+  height: 28px;
+}
+
+/* === ESTILOS PARA ELEMENTOS DETAILS Y PRE === */
+.detail-value details {
+  margin: var(--spacing-xs) 0;
+  position: relative;
+}
+
+.detail-value details summary {
+  cursor: pointer;
+  padding: var(--spacing-xs) var(--spacing-sm);
+  background: var(--bg-secondary);
+  border: 1px solid var(--accent-tertiary);
+  border-radius: var(--border-radius-sm);
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-medium);
+  color: var(--text-secondary);
+  transition: all var(--transition-fast);
+  user-select: none;
+}
+
+.detail-value details summary:hover {
+  background: var(--accent-tertiary);
+  color: var(--accent-primary);
+  border-color: var(--accent-primary);
+}
+
+.detail-value details summary::-webkit-details-marker {
+  color: var(--accent-primary);
+  margin-right: var(--spacing-xs);
+}
+
+.detail-value details[open] summary {
+  border-bottom-left-radius: 0;
+  border-bottom-right-radius: 0;
+  border-bottom-color: transparent;
+}
+
+/* === CORREGIDO: Dropdown que se abre por encima sin generar scroll === */
+.detail-value details[open] pre,
+.detail-value details[open] .thumbnail-links {
+  position: absolute !important;
+  top: 100% !important;
+  left: 10px !important; /* === NUEVO: Extender hacia la izquierda === */
+  right: 10px !important; /* === NUEVO: Extender hacia la derecha === */
+  min-width: 200px !important; /* === NUEVO: Ancho mínimo para evitar cortes === */
+  z-index: 99999 !important;
+  margin-top: -1px !important;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15) !important;
+  border-radius: 0 0 var(--border-radius-sm) var(--border-radius-sm) !important;
+  animation: dropdownFadeIn 0.2s ease-out !important;
+  /* Asegurar que no genere scroll */
+  max-height: 200px !important;
+  overflow-y: auto !important;
+  overflow-x: hidden !important;
+  /* Asegurar que se muestre encima del contenido */
+  background: var(--bg-tertiary) !important;
+  border: 1px solid var(--accent-tertiary) !important;
+  border-top: none !important;
+  /* Forzar que se muestre por encima */
+  display: block !important;
+  visibility: visible !important;
+  opacity: 1 !important;
+  /* Asegurar que no afecte el layout */
+  transform: none !important;
+  pointer-events: auto !important;
+}
+
+/* === NUEVO: Asegurar que el contenedor padre tenga position relative === */
+.detail-value {
+  position: relative !important;
+  overflow: visible !important;
+}
+
+/* === NUEVO: Asegurar que los details tengan position relative === */
+.detail-value details {
+  position: relative !important;
+  overflow: visible !important;
+}
+
+/* === NUEVO: Asegurar que los contenedores de detalles tengan overflow visible === */
+.detail-item {
+  overflow: visible !important;
+}
+
+.details-grid {
+  overflow: visible !important;
+}
+
+/* === NUEVO: Animación para dropdowns === */
+@keyframes dropdownFadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-5px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.detail-value details pre {
+  margin: 0;
+  padding: var(--spacing-sm);
+  background: var(--bg-tertiary);
+  border: 1px solid var(--accent-tertiary);
+  border-top: none;
+  border-radius: 0 0 var(--border-radius-sm) var(--border-radius-sm);
+  font-size: var(--font-size-xs);
+  font-family: 'Courier New', monospace;
+  color: var(--text-primary);
+  white-space: pre-wrap;
+  word-break: break-all;
+  max-height: 200px;
+  overflow-y: auto;
+  line-height: 1.4;
+}
+
+
+
+/* Dark mode para details y pre */
+[data-theme="dark"] .detail-value details summary {
+  background: var(--bg-secondary);
+  border-color: var(--accent-tertiary);
+  color: var(--text-secondary);
+}
+
+[data-theme="dark"] .detail-value details summary:hover {
+  background: var(--accent-tertiary);
+  color: var(--accent-primary);
+}
+
+[data-theme="dark"] .detail-value details pre {
+  background: var(--bg-tertiary);
+  border-color: var(--accent-tertiary);
+  color: var(--text-primary);
+}
+
+/* Responsive para details */
+@media (max-width: 768px) {
+  .detail-value details summary {
+    font-size: var(--font-size-xs);
+    padding: var(--spacing-xs);
+  }
+  
+  .detail-value details pre {
+    font-size: var(--font-size-xs);
+    padding: var(--spacing-xs);
+    max-height: 150px;
+  }
+  
+  /* === NUEVO: Ajustar ancho de dropdowns en móviles === */
+  .detail-value details[open] pre,
+  .detail-value details[open] .thumbnail-links {
+    left: -20px !important;
+    right: -20px !important;
+    min-width: 250px !important;
+  }
+}
+
+/* === NUEVO: Ajustar ancho de dropdowns en pantallas muy pequeñas === */
+@media (max-width: 480px) {
+  .detail-value details[open] pre,
+  .detail-value details[open] .thumbnail-links {
+    left: -10px !important;
+    right: -10px !important;
+    min-width: 200px !important;
+  }
+}
+
+/* === ESTILOS PARA ENLACES DE MINIATURAS === */
+.thumbnail-links {
+  padding: 4px;
+  background: var(--bg-tertiary);
+  border: 1px solid var(--accent-tertiary);
+  border-top: none;
+  border-radius: 0 0 var(--border-radius-sm) var(--border-radius-sm);
+  max-height: 200px;
+  overflow-y: auto;
+}
+
+.thumbnail-link {
+  display: block;
+  padding: 4px var(--spacing-sm);
+  margin: 0;
+  background: var(--bg-secondary);
+  border: 1px solid var(--accent-tertiary);
+  border-radius: var(--border-radius-sm);
+  color: var(--accent-primary);
+  text-decoration: none;
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-medium);
+  transition: all var(--transition-fast);
+  text-align: center;
+}
+
+.thumbnail-link:hover {
+  background: var(--accent-tertiary);
+  color: var(--accent-primary);
+  border-color: var(--accent-primary);
+  transform: translateY(-1px);
+}
+
+.thumbnail-link:active {
+  transform: translateY(0);
+}
+
+/* Dark mode para thumbnail links */
+[data-theme="dark"] .thumbnail-links {
+  background: var(--bg-tertiary);
+  border-color: var(--accent-tertiary);
+}
+
+[data-theme="dark"] .thumbnail-link {
+  background: var(--bg-secondary);
+  border-color: var(--accent-tertiary);
+  color: var(--accent-primary);
+}
+
+[data-theme="dark"] .thumbnail-link:hover {
+  background: var(--accent-tertiary);
+  color: var(--accent-primary);
+}
+
+/* Responsive para thumbnail links */
+@media (max-width: 768px) {
+  .thumbnail-links {
+    padding: 3px;
+    max-height: 150px;
+  }
+  
+  .thumbnail-link {
+    font-size: var(--font-size-xs);
+    padding: 3px var(--spacing-sm);
+    margin: 0;
+  }
+}
+
+
+
+/* === CORREGIDO: Dark mode para dropdowns superpuestos === */
+[data-theme="dark"] .detail-value details[open] pre,
+[data-theme="dark"] .detail-value details[open] .thumbnail-links {
+  background: var(--bg-tertiary) !important;
+  border-color: var(--accent-tertiary) !important;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3) !important;
+  z-index: 99999 !important;
+}
+
+/* Responsive para details */
+@media (max-width: 768px) {
+  .detail-value details summary {
+    font-size: var(--font-size-xs);
+    padding: var(--spacing-xs);
+  }
+  
+  .detail-value details pre {
+    font-size: var(--font-size-xs);
+    padding: var(--spacing-xs);
+    max-height: 150px;
+  }
+  
+  /* === CORREGIDO: Responsive para dropdowns superpuestos === */
+  .detail-value details[open] pre,
+  .detail-value details[open] .thumbnail-links {
+    max-height: 150px !important;
+    font-size: var(--font-size-xs) !important;
+    padding: var(--spacing-xs) !important;
+  }
+}
+
+/* === CORRECCIONES ESPECÍFICAS === */
+
+/* Corrección para modo single en ventanas <1081px */
+@media (max-width: 1080px) {
+  /* Mantener la funcionalidad de desplegable en modo single */
+  body:not(.two-column-mode) .card-details {
+    max-height: 0 !important;
+    overflow: hidden !important;
+    transition: max-height 0.3s ease-in-out !important;
+  }
+  
+  body:not(.two-column-mode) .card-details.expanded {
+    max-height: 600px !important; /* === NUEVO: Altura aumentada para evitar scroll === */
+    min-height: 400px !important; /* === NUEVO: Altura mínima para evitar scroll === */
+    overflow-y: auto !important;
+    overflow-x: hidden !important;
+  }
+  
+  /* Asegurar que los detalles expandidos sean desplegables */
+  body:not(.two-column-mode) .detail-value details {
+    overflow: visible !important;
+  }
+  
+  body:not(.two-column-mode) .detail-value details[open] pre {
+    max-height: 200px !important;
+    overflow-y: auto !important;
+    overflow-x: hidden !important;
+  }
+  
+  /* Asegurar que el botón de expandir funcione correctamente */
+  body:not(.two-column-mode) .expand-btn {
+    display: flex !important;
+    cursor: pointer !important;
+  }
+  
+  /* Mantener el comportamiento de desplegable para elementos details */
+  body:not(.two-column-mode) .detail-value details summary {
+    cursor: pointer !important;
+    user-select: none !important;
+  }
+}
+
+/* Corrección para modo split - mantener layout horizontal hasta 879px */
+@media (max-width: 1200px) and (min-width: 880px) {
+  body.two-column-mode .main-content {
+    display: flex !important;
+    flex-direction: row !important;
+    gap: 0 !important;
+    padding: 0 !important;
+    padding-top: calc(5px + var(--spacing-sm)) !important;
+    height: calc(100vh - 96px) !important;
+    overflow: hidden !important;
+  }
+  
+  body.two-column-mode #cardsContainer {
+    width: 40% !important;
+    min-width: 350px !important;
+    max-width: 450px !important;
+    display: flex !important;
+    flex-direction: column !important;
+    overflow-y: auto !important;
+    overflow-x: hidden !important;
+    padding: var(--spacing-sm) !important;
+    border-right: 1px solid var(--accent-tertiary) !important;
+  }
+  
+  body.two-column-mode #detailPane {
+    flex: 1 !important;
+    min-width: 0 !important;
+    display: flex !important;
+    flex-direction: column !important;
+    overflow: hidden !important;
+  }
+  
+  body.two-column-mode .detail-content {
+    flex: 1 !important;
+    overflow-y: visible !important;
+    overflow-x: hidden !important;
+    padding: var(--spacing-lg) !important;
+  }
+}
+
+/* Scroll en detalles solo para ventanas <1220px */
+@media (max-width: 1219px) {
+  body.two-column-mode .detail-content {
+    overflow-y: auto !important;
+  }
+}
+
+/* Cambio automático a modo single en ventanas <880px - regla específica */
+@media (max-width: 879px) {
+  /* Esta regla ya está cubierta por la regla anterior más específica */
+  /* Mantener para compatibilidad con reglas existentes */
+}
+
+/* === MEJORAS ESPECÍFICAS PARA MODO SPLIT === */
+
+/* Panel de detalles en modo split */
+body.two-column-mode #detailPane {
+  display: flex !important;
+  flex-direction: column !important;
+  width: 100% !important;
+  height: 100% !important;
+  min-height: 600px !important; /* === NUEVO: Altura mínima para evitar scroll === */
+  overflow-y: auto !important; /* Scroll cuando sea necesario en toda la columna derecha */
+  overflow-x: hidden !important;
+}
+
+body.two-column-mode .detail-content {
+  flex: none !important; /* No usar flex para que no se comprima */
+  display: flex !important;
+  flex-direction: column !important;
+  padding: var(--spacing-lg) !important;
+  overflow-y: visible !important; /* Sin scroll interno - mostrar detalles completos */
+  overflow-x: hidden !important;
+  width: 100% !important;
+  min-height: 500px !important; /* === NUEVO: Altura mínima para evitar scroll === */
+  height: auto !important; /* Altura automática para mostrar todo el contenido */
+}
+
+/* Título del detalle en modo split */
+body.two-column-mode .detail-content h3 {
+  flex: none !important; /* No usar flex para que no se comprima */
+  margin: 0 0 var(--spacing-md) 0 !important;
+  font-size: var(--font-size-lg) !important;
+  font-weight: var(--font-weight-bold) !important;
+  color: var(--text-primary) !important;
+  border-bottom: 2px solid var(--accent-primary) !important;
+  padding-bottom: var(--spacing-sm) !important;
+  height: auto !important; /* Altura automática */
+}
+
+/* Contenedor de detalles en modo split */
+body.two-column-mode .details-grid {
+  flex: none !important; /* No usar flex para que no se comprima */
+  display: grid !important;
+  grid-template-columns: repeat(3, 1fr) !important;
+  gap: var(--spacing-sm) var(--spacing-md) !important;
+  width: 100% !important;
+  margin-top: var(--spacing-sm) !important;
+  min-height: 400px !important; /* === NUEVO: Altura mínima para evitar scroll === */
+  height: auto !important; /* Altura automática */
+}
+
+/* Elementos de detalle en modo split */
+body.two-column-mode .detail-item {
+  display: flex !important;
+  flex-direction: column !important;
+  justify-content: flex-start !important;
+  align-items: flex-start !important;
+  padding: var(--spacing-xs) !important;
+  border-bottom: 1px solid var(--accent-tertiary) !important;
+  width: 100% !important;
+  height: auto !important;
+  min-height: 0 !important;
+}
+
+body.two-column-mode .detail-item:last-child {
+  border-bottom: none !important;
+}
+
+/* Etiquetas en modo split */
+body.two-column-mode .detail-label {
+  flex: none !important;
+  font-weight: var(--font-weight-semibold) !important;
+  color: var(--text-secondary) !important;
+  font-size: var(--font-size-xs) !important;
+  text-transform: uppercase !important;
+  letter-spacing: 0.5px !important;
+}
+
+/* Valores en modo split */
+body.two-column-mode .detail-value {
+  flex: 1 !important;
+  font-size: var(--font-size-sm) !important;
+  color: var(--text-primary) !important;
+  word-break: break-word !important;
+  text-align: left !important;
+  line-height: 1.3 !important;
+}
+
+/* Acciones en modo split */
+body.two-column-mode .detail-actions {
+  flex: none !important; /* No usar flex para que no se comprima */
+  margin-top: var(--spacing-xs) !important;
+  padding-top: var(--spacing-xs) !important;
+  border-top: 2px solid var(--accent-tertiary) !important;
+  display: flex !important;
+  justify-content: flex-start !important;
+  gap: var(--spacing-sm) !important;
+  flex-wrap: wrap !important;
+  height: auto !important; /* Altura automática */
+}
+
+/* === CORRECCIONES ESPECÍFICAS === */
+
+/* === MEJORAS ADICIONALES PARA PANEL CONDENSADO === */
+
+/* Reducir espaciado general en modo split */
+body.two-column-mode .detail-content {
+  padding: var(--spacing-xs) !important;
+}
+
+/* Hacer los detalles más compactos */
+body.two-column-mode .detail-item {
+  min-height: auto !important;
+  line-height: 1.3 !important;
+}
+
+/* Reducir espaciado entre elementos */
+body.two-column-mode .detail-item + .detail-item {
+  margin-top: 0 !important;
+}
+
+/* Hacer los dropdowns más compactos */
+body.two-column-mode .detail-value details summary {
+  padding: var(--spacing-xs) 0 !important;
+  font-size: var(--font-size-xs) !important;
+}
+
+body.two-column-mode .detail-value details[open] pre {
+  padding: var(--spacing-xs) !important;
+  font-size: var(--font-size-xs) !important;
+  max-height: 150px !important;
+}
+
+/* Reducir espaciado de botones de acción */
+body.two-column-mode .action-btn {
+  padding: var(--spacing-xs) var(--spacing-sm) !important;
+  font-size: var(--font-size-xs) !important;
+  min-height: auto !important;
+}
+
+/* Hacer el contenido más denso */
+body.two-column-mode .detail-value {
+  line-height: 1.2 !important;
+}
+
+/* Reducir espaciado del título */
+body.two-column-mode .detail-content h3 {
+  flex: none !important; /* No usar flex para que no comprima el JSON */
+  padding-bottom: var(--spacing-xs) !important;
+  margin-bottom: var(--spacing-sm) !important;
+}
+
+/* === MEJORAS PARA CAJA JSON EN MODO SPLIT === */
+
+/* Asegurar que el panel de detalles se muestre completo sin scroll */
+body.two-column-mode .detail-content {
+  display: flex !important;
+  flex-direction: column !important;
+  overflow-y: visible !important;
+  overflow-x: hidden !important;
+  max-height: none !important;
+  height: 100% !important; /* Ocupar toda la altura disponible */
+  min-height: 0 !important; /* Importante para que flex funcione correctamente */
+  /* Asegurar que el contenido no se corte */
+  padding-bottom: var(--spacing-lg) !important;
+  /* Asegurar que el contenido no se corte */
+  box-sizing: border-box !important;
+  /* Asegurar que el JSON container tenga espacio suficiente */
+  flex: 1 1 auto !important;
+}
+
+/* === AJUSTES ADICIONALES PARA VENTANAS PEQUEÑAS === */
+
+/* Para ventanas muy pequeñas, ajustar el layout */
+@media (max-height: 500px) {
+  body.two-column-mode .detail-content {
+    padding: var(--spacing-xs) !important;
+  }
+  
+  body.two-column-mode .detail-content h3 {
+    margin-bottom: var(--spacing-xs) !important;
+    font-size: var(--font-size-sm) !important;
+  }
+  
+  body.two-column-mode .details-grid {
+    gap: var(--spacing-xs) var(--spacing-sm) !important;
+    min-height: 300px !important; /* === NUEVO: Altura mínima para evitar scroll === */
+  }
+  
+  body.two-column-mode .detail-actions {
+    margin-top: var(--spacing-xs) !important;
+    padding-top: var(--spacing-xs) !important;
+  }
+}
+
+/* Caja JSON expandida en modo split */
+body.two-column-mode .json-container {
+  flex: 1 !important; /* Usar flex para ocupar todo el espacio disponible */
+  max-height: none !important; /* Sin límite de altura */
+  height: auto !important; /* Altura automática */
+  margin-top: var(--spacing-md) !important; /* Margen superior para separación */
+  margin-bottom: var(--spacing-2xl) !important; /* Margen inferior aumentado significativamente */
+  padding: var(--spacing-sm) !important;
+  padding-bottom: var(--spacing-xl) !important; /* Padding inferior extra */
+  font-size: var(--font-size-xs) !important;
+  line-height: 1.3 !important;
+  overflow-y: auto !important; /* Scroll propio cuando sea necesario */
+  overflow-x: hidden !important;
+  min-height: 150px !important; /* Altura mínima aumentada para mejor visibilidad */
+  /* Asegurar que el borde inferior sea visible */
+  border: 1px solid var(--accent-tertiary) !important; /* Borde completo en lugar de solo inferior */
+  border-radius: var(--border-radius) !important;
+  /* Asegurar que el contenido no se corte */
+  box-sizing: border-box !important;
+  /* Asegurar que el borde inferior sea siempre visible */
+  position: relative !important;
+}
+
+/* Reducir espaciado de la caja JSON en modo split */
+body.two-column-mode .json-content {
+  padding: 0 !important;
+  margin: 0 !important;
+  /* Asegurar que el contenido no se corte */
+  box-sizing: border-box !important;
+}
+
+/* === AJUSTE ESPECÍFICO PARA VISIBILIDAD DEL BORDE INFERIOR === */
+
+/* Asegurar que el JSON container siempre muestre su borde inferior */
+body.two-column-mode .json-container {
+  /* Asegurar que el borde inferior sea siempre visible */
+  position: relative !important;
+}
+
+/* Asegurar que el contenido del JSON no se corte */
+body.two-column-mode .json-container .json-content {
+  /* Asegurar que el contenido tenga espacio para el borde */
+  padding-bottom: var(--spacing-md) !important;
+  /* Asegurar que el contenido se muestre completamente */
+  box-sizing: border-box !important;
+  /* Asegurar que el contenido tenga suficiente espacio */
+  min-height: 100px !important;
+}
+
+/* === AJUSTE ESPECÍFICO PARA VISIBILIDAD COMPLETA DEL JSON === */
+
+/* Asegurar que el JSON container se muestre completamente en el espacio disponible */
+body.two-column-mode .json-container {
+  /* Asegurar que el borde inferior sea siempre visible */
+  margin-bottom: var(--spacing-2xl) !important;
+  /* Asegurar que el contenido no se corte */
+  padding-bottom: var(--spacing-xl) !important;
+  /* Asegurar que el borde sea visible */
+  border: 1px solid var(--accent-tertiary) !important;
+  /* Asegurar que el contenido se muestre completamente */
+  min-height: 200px !important;
+  /* Asegurar que el borde inferior sea siempre visible */
+  position: relative !important;
+}
+
+/* === MEDIA QUERIES PARA AJUSTAR JSON CONTAINER SEGÚN TAMAÑO DE VENTANA === */
+
+/* Para ventanas muy pequeñas, reducir aún más el JSON */
+@media (max-height: 500px) {
+  body.two-column-mode .json-container {
+    min-height: 60px !important;
+    max-height: 120px !important;
+    font-size: var(--font-size-xs) !important;
+    line-height: 1.2 !important;
+    margin-bottom: var(--spacing-sm) !important; /* Margen inferior para visibilidad */
+    padding-bottom: var(--spacing-sm) !important; /* Padding inferior para borde visible */
+  }
+}
+
+/* Para ventanas pequeñas, ajustar el JSON */
+@media (max-height: 600px) {
+  body.two-column-mode .json-container {
+    min-height: 80px !important;
+    max-height: 150px !important;
+    margin-bottom: var(--spacing-sm) !important; /* Margen inferior para visibilidad */
+  }
+}
+
+/* Para ventanas medianas, ajuste moderado */
+@media (min-height: 601px) and (max-height: 800px) {
+  body.two-column-mode .json-container {
+    min-height: 350px !important;
+  }
+}
+
+/* Para ventanas grandes, permitir más espacio al JSON */
+@media (min-height: 801px) {
+  body.two-column-mode .json-container {
+    min-height: 400px !important;
+  }
+}
+
+/* Asegurar que el contenido de detalles se expanda a todo el espacio disponible - ya definido arriba */
+
+/* Hacer que las acciones estén siempre visibles - ya definido arriba */
+
+/* === CORRECCIONES ESPECÍFICAS PARA BARRAS SUPERIORES EN MODO SINGLE === */
+
+/* === MODO SINGLE - BARRAS REHECHAS === */
+
+/* Las barras mantienen la misma apariencia en ambos modos */
+
+/* === CORRECCIONES ESPECÍFICAS PARA FUNCIONALIDAD DESPLEGABLE EN MODO SINGLE === */
+
+/* Asegurar que los detalles sean desplegables en modo single */
+body:not(.two-column-mode) .card-details {
+  transition: max-height 0.3s ease-in-out !important;
+  overflow: hidden !important;
+}
+
+body:not(.two-column-mode) .card-details.expanded {
+  overflow-y: auto !important;
+  overflow-x: hidden !important;
+}
+
+/* Asegurar que los elementos details sean desplegables */
+body:not(.two-column-mode) .detail-value details {
+  overflow: visible !important;
+}
+
+body:not(.two-column-mode) .detail-value details summary {
+  cursor: pointer !important;
+  user-select: none !important;
+}
+
+/* Asegurar que el botón de expandir funcione */
+body:not(.two-column-mode) .expand-btn {
+  display: flex !important;
+  cursor: pointer !important;
+  transition: transform 0.2s ease-in-out !important;
+}
+
+body:not(.two-column-mode) .expand-btn.expanded {
+  transform: rotate(180deg) !important;
+}
+
+/* Asegurar que el contenido de detalles sea desplegable */
+body:not(.two-column-mode) .detail-value details[open] pre {
+  max-height: 200px !important;
+  overflow-y: auto !important;
+  overflow-x: hidden !important;
+}
+
+/* Asegurar que los enlaces de thumbnail sean desplegables */
+body:not(.two-column-mode) .detail-value details[open] .thumbnail-links {
+  max-height: 150px !important;
+  overflow-y: auto !important;
+  overflow-x: hidden !important;
+}
+
+/* === AJUSTES ESPECÍFICOS PARA VENTANAS PEQUEÑAS EN MODO SINGLE === */
+
+/* === CONFIGURACIÓN RESPONSIVA UNIFICADA === */
+
+/* Ventanas medianas */
+@media (max-width: 1024px) {
+  .app-header,
+  .filter-bar,
+  .action-bar {
+    padding: 6px 12px;
+    gap: 6px;
+    height: 44px;
+  }
+  
+  .two-column-mode .main-content {
+    height: calc(100vh - 132px);
+    min-height: calc(100vh - 132px);
+    overflow-y: auto;
+  }
+  
+  .two-column-mode #cardsContainer,
+  .two-column-mode #detailPane {
+    max-height: calc(100vh - 132px);
+    height: calc(100vh - 132px);
+  }
+}
+
+/* Ventanas pequeñas */
+@media (max-width: 768px) {
+  .app-header,
+  .filter-bar,
+  .action-bar {
+    padding: 4px 8px;
+    gap: 4px;
+    height: 40px;
+  }
+  
+  .two-column-mode .main-content {
+    height: calc(100vh - 120px);
+    min-height: calc(100vh - 120px);
+    overflow-y: auto;
+    padding: var(--spacing-md);
+  }
+  
+  .two-column-mode #cardsContainer,
+  .two-column-mode #detailPane {
+    max-height: calc(100vh - 120px);
+    height: calc(100vh - 120px);
+  }
+}
+
+/* Ventanas muy pequeñas */
+@media (max-width: 480px) {
+  .app-header,
+  .filter-bar,
+  .action-bar {
+    padding: 3px 6px;
+    gap: 3px;
+    height: 36px;
+  }
+  
+  .two-column-mode .main-content {
+    height: calc(100vh - 108px);
+    min-height: calc(100vh - 108px);
+    overflow-y: auto;
+    padding: var(--spacing-sm);
+  }
+  
+  .two-column-mode #cardsContainer,
+  .two-column-mode #detailPane {
+    max-height: calc(100vh - 108px);
+    height: calc(100vh - 108px);
+  }
+}
+
+/* Prevenir superposición de botones en ventanas estrechas */
+@media (max-width: 991px) {
+  .action-bar {
+    flex-wrap: wrap;
+    min-height: 56px;
+    height: auto;
+  }
+  
+  .action-group {
+    flex-wrap: wrap;
+    gap: 4px;
+  }
+  
+  .btn-primary, .btn-secondary, .btn-danger, .btn-success, .btn-export {
+    min-width: 50px;
+    font-size: 10px;
+    padding: 3px 6px;
+  }
+  
+  .filter-bar {
+    flex-wrap: wrap;
+    min-height: 56px;
+    height: auto;
+  }
+  
+  .filter-group {
+    flex-wrap: wrap;
+    gap: 4px;
+  }
+  
+  .filter-select, .search-input, .duration-input {
+    min-width: 60px;
+    font-size: 11px;
+    padding: 3px 6px;
+  }
+}
+
+/* Configuración específica para ventanas muy estrechas */
+@media (max-width: 854px) {
+  .app-header {
+    flex-wrap: wrap;
+    min-height: 64px;
+    height: auto;
+    padding: 6px 8px;
+  }
+  
+  .header-content {
+    flex-wrap: wrap;
+    gap: 6px;
+  }
+  
+  .header-stats {
+    flex-wrap: wrap;
+    gap: 4px;
+  }
+  
+  .stat-item {
+    font-size: 10px;
+    padding: 2px 4px;
+    height: 20px;
+  }
+  
+  .storage-indicator {
+    min-width: 80px;
+    gap: 3px;
+  }
+  
+  .storage-text {
+    gap: 3px;
+    margin-bottom: 2px;
+  }
+  
+  .storage-size {
+    font-size: 9px;
+    margin-bottom: 2px;
+  }
+  
+  #storagePercentage {
+    font-size: 10px;
+  }
+  
+  .storage-label {
+    font-size: 9px;
+  }
+  
+  .filter-bar {
+    flex-wrap: wrap;
+    min-height: 64px;
+    height: auto;
+    padding: 6px 8px;
+  }
+  
+  .filter-group {
+    flex-wrap: wrap;
+    gap: 3px;
+  }
+  
+  .filter-select, .search-input, .duration-input {
+    min-width: 50px;
+    font-size: 10px;
+    padding: 2px 4px;
+    height: 20px;
+  }
+  
+  .action-bar {
+    flex-wrap: wrap;
+    min-height: 64px;
+    height: auto;
+    padding: 6px 8px;
+  }
+  
+  .action-group {
+    flex-wrap: wrap;
+    gap: 3px;
+  }
+  
+  .btn-primary, .btn-secondary, .btn-danger, .btn-success, .btn-export {
+    min-width: 40px;
+    font-size: 9px;
+    padding: 2px 4px;
+    height: 20px;
+  }
+  
+  .checkbox-container {
+    min-height: 20px;
+    gap: 2px;
+  }
+  
+  .checkmark {
+    width: 12px;
+    height: 12px;
+  }
+  
+  .checkbox-label {
+    font-size: 9px;
+  }
+  
+  .selection-count {
+    font-size: 9px;
+    padding: 1px 3px;
+  }
+}
+
+/* Configuración para ventanas extremadamente estrechas */
+@media (max-width: 600px) {
+  .storage-indicator {
+    min-width: 60px;
+    gap: 2px;
+  }
+  
+  .storage-text {
+    gap: 2px;
+    margin-bottom: 1px;
+  }
+  
+  .storage-size {
+    font-size: 8px;
+    margin-bottom: 1px;
+  }
+  
+  #storagePercentage {
+    font-size: 9px;
+  }
+  
+  .storage-label {
+    font-size: 8px;
+  }
+  
+  .btn-primary, .btn-secondary, .btn-danger, .btn-success, .btn-export {
+    min-width: 35px;
+    font-size: 8px;
+    padding: 1px 3px;
+    height: 18px;
+  }
+  
+  .filter-select, .search-input, .duration-input {
+    min-width: 40px;
+    font-size: 9px;
+    padding: 1px 3px;
+    height: 18px;
+  }
+}
+
+/* === FORZAR CAMBIO A MODO SINGLE EN VENTANAS < 880px === */
+
+/* Forzar modo single cuando la ventana sea menor a 880px */
+@media (max-width: 879px) {
+  /* Forzar que el modo split se comporte como modo single */
+  body.two-column-mode .main-content {
+    flex-direction: column !important;
+    gap: var(--spacing-md) !important;
+    padding: var(--spacing-md) !important;
+    padding-top: calc(168px + var(--spacing-md)) !important;
+    height: calc(100vh - 168px) !important;
+    overflow-y: auto !important;
+  }
+  
+  body.two-column-mode #cardsContainer {
+    width: 100% !important;
+    max-width: none !important;
+    min-width: auto !important;
+    display: flex !important;
+    flex-direction: column !important;
+    overflow: visible !important;
+    border-right: none !important;
+    border-bottom: 1px solid var(--accent-tertiary) !important;
+  }
+  
+  /* Ocultar el panel de detalles separado */
+  body.two-column-mode #detailPane {
+    display: none !important;
+  }
+  
+  /* Mostrar los detalles como parte de las tarjetas */
+  body.two-column-mode .card-details {
+    max-height: 0 !important;
+    overflow: hidden !important;
+    transition: max-height 0.3s ease-in-out !important;
+  }
+  
+  body.two-column-mode .card-details.expanded {
+    max-height: 400px !important;
+    overflow-y: auto !important;
+    overflow-x: hidden !important;
+  }
+  
+  /* Asegurar que los elementos details sean desplegables */
+  body.two-column-mode .detail-value details {
+    overflow: visible !important;
+  }
+  
+  body.two-column-mode .detail-value details[open] pre {
+    max-height: 200px !important;
+    overflow-y: auto !important;
+    overflow-x: hidden !important;
+  }
+  
+  /* Asegurar que el botón de expandir funcione */
+  body.two-column-mode .expand-btn {
+    display: flex !important;
+    cursor: pointer !important;
+    transition: transform 0.2s ease-in-out !important;
+  }
+  
+  body.two-column-mode .expand-btn.expanded {
+    transform: rotate(180deg) !important;
+  }
+  
+  /* Asegurar que los elementos details sean clickeables */
+  body.two-column-mode .detail-value details summary {
+    cursor: pointer !important;
+    user-select: none !important;
+  }
+}
+
+/* === MOSTRAR BOTÓN DE CAMBIO DE MODO EN TODOS LOS CASOS === */
+
+/* Mostrar el botón de cambio de modo de vista en todos los casos */
+@media (max-width: 879px) {
+  .view-mode-toggle {
+    display: flex !important;
+  }
+  
+  .view-mode-toggle button {
+    display: flex !important;
+    align-items: center !important;
+    gap: 4px !important;
+    font-size: 13px !important;
+    font-weight: 500 !important;
+    line-height: 1.2 !important;
+    white-space: nowrap !important;
+  }
+  
+  /* Asegurar que el layout sea siempre single en ventanas < 880px */
+  .main-content {
+    flex-direction: column !important;
+    gap: var(--spacing-md) !important;
+    padding: var(--spacing-md) !important;
+    padding-top: calc(96px + var(--spacing-md)) !important;
+    height: calc(100vh - 96px) !important;
+    overflow: hidden !important;
+  }
+  
+  #cardsContainer {
+    width: 100% !important;
+    max-width: none !important;
+    min-width: auto !important;
+    display: flex !important;
+    flex-direction: column !important;
+    overflow: hidden !important;
+    border-right: none !important;
+    border-bottom: 1px solid var(--accent-tertiary) !important;
+  }
+  
+  /* Ocultar el panel de detalles separado */
+  #detailPane {
+    display: none !important;
+  }
+  
+  /* Mostrar los detalles como parte de las tarjetas */
+  .card-details {
+    max-height: 0 !important;
+    overflow: hidden !important;
+    transition: max-height 0.3s ease-in-out !important;
+  }
+  
+  .card-details.expanded {
+    max-height: 400px !important;
+    overflow-y: auto !important;
+    overflow-x: hidden !important;
+  }
+  
+  /* Asegurar que los elementos details sean desplegables */
+  .detail-value details {
+    overflow: visible !important;
+  }
+  
+  .detail-value details[open] pre {
+    max-height: 200px !important;
+    overflow-y: auto !important;
+    overflow-x: hidden !important;
+  }
+  
+  /* Asegurar que el botón de expandir funcione */
+  .expand-btn {
+    display: flex !important;
+    cursor: pointer !important;
+    transition: transform 0.2s ease-in-out !important;
+  }
+  
+  .expand-btn.expanded {
+    transform: rotate(180deg) !important;
+  }
+  
+  /* Asegurar que los elementos details sean clickeables */
+  .detail-value details summary {
+    cursor: pointer !important;
+    user-select: none !important;
+  }
+}
+
+/* === REGLAS ADICIONALES PARA VENTANAS MUY PEQUEÑAS === */
+
+/* Reglas específicas para ventanas muy pequeñas */
+@media (max-width: 480px) {
+  /* Mantener el botón de cambio de modo visible */
+  .view-mode-toggle {
+    display: flex !important;
+  }
+  
+  .view-mode-toggle button {
+    display: flex !important;
+    align-items: center !important;
+    gap: 4px !important;
+    font-size: 11px !important;
+    font-weight: 500 !important;
+    line-height: 1.2 !important;
+    white-space: nowrap !important;
+  }
+  
+  /* Forzar layout de una sola columna */
+  .main-content {
+    flex-direction: column !important;
+    gap: var(--spacing-sm) !important;
+    padding: var(--spacing-sm) !important;
+    padding-top: calc(96px + var(--spacing-sm)) !important;
+  }
+  
+  /* Asegurar que las tarjetas ocupen todo el ancho */
+  #cardsContainer {
+    width: 100% !important;
+    max-width: none !important;
+    min-width: auto !important;
+    padding: var(--spacing-sm) !important;
+  }
+  
+  /* Ocultar completamente el panel de detalles separado */
+  #detailPane {
+    display: none !important;
+  }
+  
+  /* Hacer los detalles más compactos en móviles */
+  .card-details {
+    max-height: 0 !important;
+    overflow: hidden !important;
+    transition: max-height 0.3s ease-in-out !important;
+    padding: var(--spacing-sm) !important;
+  }
+  
+  .card-details.expanded {
+    max-height: 300px !important;
+    overflow-y: auto !important;
+    overflow-x: hidden !important;
+  }
+  
+  /* Reducir el tamaño de los elementos details en móviles */
+  .detail-value details summary {
+    font-size: var(--font-size-xs) !important;
+    padding: var(--spacing-xs) 0 !important;
+  }
+  
+  .detail-value details[open] pre {
+    max-height: 150px !important;
+    font-size: var(--font-size-xs) !important;
+    padding: var(--spacing-xs) !important;
+  }
+  
+  /* Hacer los botones más pequeños en móviles */
+  .expand-btn {
+    padding: var(--spacing-xs) !important;
+    font-size: var(--font-size-xs) !important;
+  }
+  
+  /* Asegurar que el contenido sea legible en pantallas pequeñas */
+  .card-title {
+    font-size: var(--font-size-sm) !important;
+    line-height: 1.3 !important;
+  }
+  
+  .card-meta {
+    font-size: var(--font-size-xs) !important;
+  }
+  
+  .card-tags .tag {
+    font-size: 10px !important;
+    padding: 2px 6px !important;
+  }
+}
+
+/* === DESACTIVAR MODO SPLIT EN VENTANAS < 880px === */
+
+/* Desactivar completamente el modo split en ventanas < 880px */
+@media (max-width: 879px) {
+  /* Forzar que el modo split se desactive y use comportamiento de modo single */
+  body.two-column-mode .main-content {
+    flex-direction: column !important;
+    gap: var(--spacing-md) !important;
+    padding: var(--spacing-md) !important;
+    padding-top: calc(96px + var(--spacing-md)) !important;
+    height: calc(100vh - 96px) !important;
+    overflow: hidden !important;
+  }
+  
+  body.two-column-mode #cardsContainer {
+    width: 100% !important;
+    max-width: none !important;
+    min-width: auto !important;
+    display: flex !important;
+    flex-direction: column !important;
+    overflow: hidden !important;
+    border-right: none !important;
+    border-bottom: 1px solid var(--accent-tertiary) !important;
+  }
+  
+  /* Ocultar completamente el panel de detalles separado */
+  body.two-column-mode #detailPane {
+    display: none !important;
+  }
+  
+  /* Mostrar los detalles como parte de las tarjetas (comportamiento de modo single) */
+  body.two-column-mode .card-details {
+    max-height: 0 !important;
+    overflow: hidden !important;
+    transition: max-height 0.3s ease-in-out !important;
+  }
+  
+  body.two-column-mode .card-details.expanded {
+    max-height: 400px !important;
+    overflow-y: auto !important;
+    overflow-x: hidden !important;
+  }
+  
+  /* Asegurar que los elementos details sean desplegables */
+  body.two-column-mode .detail-value details {
+    overflow: visible !important;
+  }
+  
+  body.two-column-mode .detail-value details[open] pre {
+    max-height: 200px !important;
+    overflow-y: auto !important;
+    overflow-x: hidden !important;
+  }
+  
+  /* Asegurar que el botón de expandir funcione */
+  body.two-column-mode .expand-btn {
+    display: flex !important;
+    cursor: pointer !important;
+    transition: transform 0.2s ease-in-out !important;
+  }
+  
+  body.two-column-mode .expand-btn.expanded {
+    transform: rotate(180deg) !important;
+  }
+  
+  /* Asegurar que los elementos details sean clickeables */
+  body.two-column-mode .detail-value details summary {
+    cursor: pointer !important;
+    user-select: none !important;
+  }
+}
+
+/* === MODO SPLIT EN VENTANAS < 880px === */
+
+/* Mantener layout de split en ventanas < 880px pero con ajustes */
+@media (max-width: 879px) {
+  /* Mantener layout horizontal para modo split */
+  body.two-column-mode .main-content {
+    display: flex !important;
+    flex-direction: row !important;
+    gap: 0 !important;
+    padding: 0 !important;
+    padding-top: calc(6px + var(--spacing-xs)) !important;
+    height: calc(100vh - 96px) !important;
+    overflow: hidden !important;
+  }
+  
+  /* Ajustar contenedor de tarjetas para modo split */
+  body.two-column-mode #cardsContainer {
+    width: 50% !important;
+    min-width: 300px !important;
+    max-width: 400px !important;
+    display: flex !important;
+    flex-direction: column !important;
+    overflow-y: auto !important;
+    overflow-x: hidden !important;
+    padding: var(--spacing-sm) !important;
+    border-right: 1px solid var(--accent-tertiary) !important;
+  }
+  
+  /* Mostrar panel de detalles en modo split */
+  body.two-column-mode #detailPane {
+    flex: 1 !important;
+    min-width: 0 !important;
+    display: flex !important;
+    flex-direction: column !important;
+    overflow: hidden !important;
+  }
+  
+  /* Ajustar contenido de detalles */
+  body.two-column-mode .detail-content {
+    flex: 1 !important;
+    overflow-y: auto !important;
+    overflow-x: hidden !important;
+    padding: var(--spacing-sm) !important;
+  }
+  
+  /* Ocultar detalles en las tarjetas cuando está en modo split */
+  body.two-column-mode .card-details {
+    display: none !important;
+  }
+  
+  /* Asegurar que las tarjetas sean clickeables en modo split */
+  body.two-column-mode .history-card {
+    cursor: pointer !important;
+  }
+  
+  /* Ocultar botón de expandir en modo split */
+  body.two-column-mode .expand-btn {
+    display: none !important;
+  }
+}
+
+/* === REGLAS ADICIONALES PARA FUNCIONALIDAD DE EXPANSIÓN EN MODO SINGLE === */
+
+/* Asegurar que las tarjetas sean expandibles en modo single */
+@media (max-width: 879px) {
+  /* Forzar que las tarjetas tengan el comportamiento correcto */
+  .history-card {
+    position: relative !important;
+    overflow: visible !important;
+  }
+  
+  /* Asegurar que el botón de expandir esté siempre visible */
+  .expand-btn {
+    position: absolute !important;
+    right: var(--spacing-sm) !important;
+    top: var(--spacing-sm) !important;
+    z-index: 10 !important;
+    background: var(--bg-secondary) !important;
+    border: 1px solid var(--accent-tertiary) !important;
+    border-radius: 4px !important;
+    padding: 4px !important;
+    min-width: 24px !important;
+    min-height: 24px !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+  }
+  
+  /* Asegurar que los detalles se muestren correctamente */
+  .card-details {
+    margin-top: var(--spacing-sm) !important;
+    padding: var(--spacing-sm) !important;
+    border-top: 1px solid var(--accent-tertiary) !important;
+    background: var(--bg-secondary) !important;
+    border-radius: 4px !important;
+  }
+  
+  /* Asegurar que el contenido de los detalles sea visible */
+  .details-grid {
+    display: grid !important;
+    grid-template-columns: repeat(3, 1fr) !important;
+    gap: var(--spacing-sm) var(--spacing-md) !important;
+  }
+  
+  /* Asegurar que los elementos details funcionen */
+  .detail-value details {
+    border: 1px solid var(--accent-tertiary) !important;
+    border-radius: 4px !important;
+    margin: var(--spacing-xs) 0 !important;
+  }
+  
+  .detail-value details summary {
+    padding: var(--spacing-sm) !important;
+    background: var(--bg-primary) !important;
+    cursor: pointer !important;
+    border-radius: 4px 4px 0 0 !important;
+  }
+  
+  .detail-value details[open] summary {
+    border-bottom: 1px solid var(--accent-tertiary) !important;
+  }
+  
+  .detail-value details pre {
+    padding: var(--spacing-sm) !important;
+    margin: 0 !important;
+    background: var(--bg-secondary) !important;
+    border-radius: 0 0 4px 4px !important;
+  }
+  
+  /* Asegurar que las acciones sean visibles */
+  .detail-actions {
+    margin-top: var(--spacing-sm) !important;
+    padding-top: var(--spacing-sm) !important;
+    border-top: 1px solid var(--accent-tertiary) !important;
+    display: flex !important;
+    gap: var(--spacing-sm) !important;
+    flex-wrap: wrap !important;
+  }
+  
+  .action-btn {
+    padding: var(--spacing-xs) var(--spacing-sm) !important;
+    font-size: var(--font-size-xs) !important;
+    min-height: 32px !important;
+  }
+}
+
+/* === MODO SINGLE EN VENTANAS < 880px (CUANDO NO ESTÁ EN MODO SPLIT) === */
+
+/* Reglas para modo single cuando no está en modo split */
+@media (max-width: 879px) {
+  /* Solo aplicar estas reglas cuando NO está en modo split */
+  body:not(.two-column-mode) .main-content {
+    flex-direction: column !important;
+    gap: var(--spacing-md) !important;
+    padding: var(--spacing-md) !important;
+    padding-top: calc(96px + var(--spacing-md)) !important;
+    height: calc(100vh - 96px) !important;
+    overflow: hidden !important;
+  }
+  
+  body:not(.two-column-mode) #cardsContainer {
+    width: 100% !important;
+    max-width: none !important;
+    min-width: auto !important;
+    display: flex !important;
+    flex-direction: column !important;
+    overflow: hidden !important;
+    border-right: none !important;
+    border-bottom: 1px solid var(--accent-tertiary) !important;
+  }
+  
+  body:not(.two-column-mode) #detailPane {
+    display: none !important;
+  }
+  
+  /* Forzar comportamiento de detalles expandibles en modo single */
+  body:not(.two-column-mode) .card-details {
+    max-height: 0 !important;
+    overflow: hidden !important;
+    transition: max-height 0.3s ease-in-out !important;
+    display: block !important;
+  }
+  
+  body:not(.two-column-mode) .card-details.expanded {
+    max-height: 400px !important;
+    overflow-y: auto !important;
+    overflow-x: hidden !important;
+    display: block !important;
+  }
+  
+  /* Asegurar que los elementos details sean desplegables en modo single */
+  body:not(.two-column-mode) .detail-value details {
+    overflow: visible !important;
+    display: block !important;
+  }
+  
+  body:not(.two-column-mode) .detail-value details[open] pre {
+    max-height: 200px !important;
+    overflow-y: auto !important;
+    overflow-x: hidden !important;
+  }
+  
+  /* Forzar que el botón de expandir sea visible y funcional en modo single */
+  body:not(.two-column-mode) .expand-btn {
+    display: flex !important;
+    cursor: pointer !important;
+    transition: transform 0.2s ease-in-out !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+  }
+  
+  body:not(.two-column-mode) .expand-btn.expanded {
+    transform: rotate(180deg) !important;
+  }
+  
+  /* Asegurar que los elementos details sean clickeables en modo single */
+  body:not(.two-column-mode) .detail-value details summary {
+    cursor: pointer !important;
+    user-select: none !important;
+    display: block !important;
+  }
+  
+  /* Asegurar que las tarjetas sean clickeables en modo single */
+  body:not(.two-column-mode) .history-card {
+    cursor: pointer !important;
+  }
+  
+  /* Asegurar que el contenido de las tarjetas sea visible en modo single */
+  body:not(.two-column-mode) .card-content {
+    display: block !important;
+    visibility: visible !important;
+  }
+}
+
+/* === SCROLLBAR ADICIONAL PARA MODO SINGLE === */
+
+/* Scrollbar para modo single en tema oscuro */
+[data-theme="dark"] body:not(.two-column-mode) #cardsContainer::-webkit-scrollbar-track {
+  background: var(--bg-tertiary);
+}
+
+[data-theme="dark"] body:not(.two-column-mode) #cardsContainer::-webkit-scrollbar-thumb {
+  background: var(--accent-tertiary);
+  border-color: var(--bg-tertiary);
+}
+
+[data-theme="dark"] body:not(.two-column-mode) #cardsContainer::-webkit-scrollbar-thumb:hover {
+  background: var(--accent-secondary);
+}
+
+/* Scrollbar para modo single en ventanas pequeñas */
+@media (max-width: 879px) {
+  body:not(.two-column-mode) #cardsContainer::-webkit-scrollbar {
+    width: 4px;
+  }
+  
+  body:not(.two-column-mode) #cardsContainer::-webkit-scrollbar-track {
+    margin: 1px 0;
+  }
+  
+  body:not(.two-column-mode) #cardsContainer::-webkit-scrollbar-thumb {
+    border-radius: 2px;
+  }
+}
+
+/* Scrollbar para modo single en ventanas muy pequeñas */
+@media (max-width: 480px) {
+  body:not(.two-column-mode) #cardsContainer::-webkit-scrollbar {
+    width: 3px;
+  }
+  
+  body:not(.two-column-mode) #cardsContainer::-webkit-scrollbar-track {
+    margin: 0;
+  }
+  
+  body:not(.two-column-mode) #cardsContainer::-webkit-scrollbar-thumb {
+    border-radius: 1px;
+  }
+}
+
+/* === SCROLLBAR PRINCIPAL DE LA VENTANA DEL HISTORIAL === */
+
+/* Scrollbar principal para toda la ventana del historial - MODO CLARO */
+html::-webkit-scrollbar,
+body::-webkit-scrollbar {
+  width: 8px !important;
+}
+
+html::-webkit-scrollbar-track,
+body::-webkit-scrollbar-track {
+  background: var(--accent-quaternary) !important;
+  border-radius: 4px !important;
+  margin: 2px 0 !important;
+}
+
+html::-webkit-scrollbar-thumb,
+body::-webkit-scrollbar-thumb {
+  background: #00c4b4 !important;
+  border-radius: 4px !important;
+  border: 1px solid var(--bg-tertiary) !important;
+  transition: background-color 0.2s ease !important;
+}
+
+html::-webkit-scrollbar-thumb:hover,
+body::-webkit-scrollbar-thumb:hover {
+  background: #00e6d4 !important;
+}
+
+html::-webkit-scrollbar-thumb:active,
+body::-webkit-scrollbar-thumb:active {
+  background: #00a294 !important;
+}
+
+/* Scrollbar principal para tema oscuro */
+[data-theme="dark"] html::-webkit-scrollbar,
+[data-theme="dark"] body::-webkit-scrollbar {
+  width: 10px !important;
+}
+
+[data-theme="dark"] html::-webkit-scrollbar-track,
+[data-theme="dark"] body::-webkit-scrollbar-track {
+  background: var(--bg-primary) !important;
+  border-radius: 6px !important;
+  margin: 3px 0 !important;
+  border: 1px solid var(--accent-tertiary) !important;
+}
+
+[data-theme="dark"] html::-webkit-scrollbar-thumb,
+[data-theme="dark"] body::-webkit-scrollbar-thumb {
+  background: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary)) !important;
+  border-radius: 6px !important;
+  border: 1px solid var(--accent-primary) !important;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3) !important;
+  transition: all 0.3s ease !important;
+}
+
+[data-theme="dark"] html::-webkit-scrollbar-thumb:hover,
+[data-theme="dark"] body::-webkit-scrollbar-thumb:hover {
+  background: linear-gradient(135deg, var(--accent-secondary), var(--accent-primary)) !important;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.4) !important;
+  transform: scale(1.05) !important;
+}
+
+[data-theme="dark"] html::-webkit-scrollbar-thumb:active,
+[data-theme="dark"] body::-webkit-scrollbar-thumb:active {
+  background: linear-gradient(135deg, var(--accent-primary), var(--accent-tertiary)) !important;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.5) !important;
+  transform: scale(0.95) !important;
+}
+
+/* Firefox support para scrollbar principal - MODO CLARO */
+html,
+body {
+  scrollbar-width: thin !important;
+  scrollbar-color: #00c4b4 var(--bg-tertiary) !important;
+}
+
+[data-theme="dark"] html,
+[data-theme="dark"] body {
+  scrollbar-width: thin !important;
+  scrollbar-color: var(--accent-primary) var(--bg-primary) !important;
+}
+
+/* Scrollbar principal para ventanas pequeñas */
+@media (max-width: 879px) {
+  body::-webkit-scrollbar {
+    width: 6px;
+  }
+  
+  body::-webkit-scrollbar-track {
+    margin: 1px 0;
+  }
+  
+  body::-webkit-scrollbar-thumb {
+    border-radius: 3px;
+  }
+}
+
+/* Scrollbar principal para ventanas muy pequeñas */
+@media (max-width: 480px) {
+  body::-webkit-scrollbar {
+    width: 4px;
+  }
+  
+  body::-webkit-scrollbar-track {
+    margin: 0;
+  }
+  
+  body::-webkit-scrollbar-thumb {
+    border-radius: 2px;
+  }
+}
+
+/* === SCROLLBAR PRINCIPAL PARA MODO OSCURO EN VENTANAS PEQUEÑAS === */
+
+/* Scrollbar principal para tema oscuro en ventanas pequeñas */
+@media (max-width: 879px) {
+  [data-theme="dark"] body::-webkit-scrollbar {
+    width: 8px;
+  }
+  
+  [data-theme="dark"] body::-webkit-scrollbar-track {
+    margin: 2px 0;
+    border-radius: 4px;
+  }
+  
+  [data-theme="dark"] body::-webkit-scrollbar-thumb {
+    border-radius: 4px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+  }
+  
+  [data-theme="dark"] body::-webkit-scrollbar-thumb:hover {
+    transform: scale(1.02);
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.4);
+  }
+}
+
+/* Scrollbar principal para tema oscuro en ventanas muy pequeñas */
+@media (max-width: 480px) {
+  [data-theme="dark"] body::-webkit-scrollbar {
+    width: 6px;
+  }
+  
+  [data-theme="dark"] body::-webkit-scrollbar-track {
+    margin: 1px 0;
+    border-radius: 3px;
+  }
+  
+  [data-theme="dark"] body::-webkit-scrollbar-thumb {
+    border-radius: 3px;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+  }
+  
+  [data-theme="dark"] body::-webkit-scrollbar-thumb:hover {
+    transform: scale(1.01);
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.4);
+  }
+}
+
+
+
