@@ -2,7 +2,8 @@
 
 [![Version](https://img.shields.io/badge/version-2.6.8-blue.svg)](https://github.com/your-repo/AdHunt3r)
 [![Chrome Extension](https://img.shields.io/badge/Chrome-Extension-green.svg)](https://chrome.google.com/webstore/detail/adhunt3r)
-
+<img width="958" height="472" alt="Image" src="https://github.com/user-attachments/assets/0931cc90-035f-4f0d-907d-222a77e34fa4" />
+<img width="400" height="433" alt="Image" src="https://github.com/user-attachments/assets/7e5f9c05-f299-4fd1-9e98-e9eee4b59a15" />
 ## 🎯 ¿Para qué sirve?
 
 AdHunt3r es una extensión de Chrome que **detecta y analiza anuncios y videos de YouTube** en tiempo real. Es útil para:
